@@ -6,7 +6,7 @@ import requests
 import bs4
 import re
 import csv
-
+import numpy as np
 
 
 def get_soup(url):
@@ -17,13 +17,13 @@ def get_soup(url):
     try:
         r = requests.get(url)
         if r.status_code == 404 or r.status_code == 403:
-            print("404 error")
+            # print("404 error caused by", url)
             r = None
     except:
-        print("except")
+        # print("could not get request from", url)
         r = None
     if r == None:
-        print("No request")
+        # print("No request")
         return None
 
     try:
@@ -70,23 +70,48 @@ def get_oti_score(first_name, last_name):
         (economic issues, social issues).
     """
     # Eventually move this line to somewhere more efficient
-    senators = read_csv("current_senators.csv")
+    currently_in_office = read_csv("currently_in_office.csv")
+    have_dw_nominate_score = read_csv("dw-nominate.csv")
+    known_politicians = currently_in_office + have_dw_nominate_score
     match = False
-    for senator in senators:
-        first, last, state, alt_first, alt_last = senator
+    for politician in known_politicians:
+        role, state, party, first, last, dw, alt_first, alt_last = politician
+        # first, last, state, alt_first, alt_last = senator
         if last_name in [last, alt_last]:
             if first_name in [first, alt_first]:
                 match = True
                 full_name = first + " " + last
+                their_role = role
+                their_state = state
     if match == False:
-        print("No match found")
+        print("No On The Issues page for", first_name, last_name, "found.")
         return (None, None)
 
     url_name = re.sub("[ \.]", "_", full_name)
     url_name = re.sub("'", "%60", url_name)
-    url = "http://senate.ontheissues.org/Senate/" + url_name + ".htm"
+    if url_name == "Mike_Rogers":
+        # There were two Mike Rogers in Congress, 
+        # so the second one has a custom url
+        url = "http://www.ontheissues.org/MI/Mike_Rogers.htm"
+
+    elif their_role == "House":
+        url = "http://www.ontheissues.org/" + their_state + "/" + url_name + ".htm"
+    elif their_role == "Senate":
+        url = "http://www.ontheissues.org/Senate/" + url_name + ".htm"
+    elif their_role == "Governor" or "President":
+        url = "http://www.ontheissues.org/" + url_name + ".htm"
+    else:
+        print(first, last, "has not been a governor or held federal office.")
+        return (None, None)
 
     soup = get_soup(url)
+    if not soup:
+        # Members of the House of Reps have two different url formats
+        url = "http://www.ontheissues.org/House/" + url_name + ".htm"
+        soup = get_soup(url)
+        if not soup:
+            print(url_name)
+            return (None, None)
     text = soup.text
     econ_scores = re.findall("-?[0-9](?= points on Economic scale)", text)
     econ_total = sum([int(x) for x in econ_scores])
@@ -126,14 +151,92 @@ def fuse_dw_nominate_and_oti_scores(dw_nominate_filename):
     dw_table = read_csv(dw_nominate_filename)
     for role, state, party, first, last, dw_score, alt_first, alt_last in dw_table:
         econ_oti, social_oti = get_oti_score(first, last)
-        if econ_oti and social_oti:
+        if econ_oti != None:
             fused.append([role, state, party, first, last, dw_score, econ_oti, 
                 social_oti, alt_first, alt_last])
+        else:
+            print("No scores for", first, last)
     write_csv(fused, "fused_scores.csv")
     return None
 
 
-# def predict_
+def predict_dw_nominate_from_oti(fused_filename):
+    """
+    Use the DW-NOMINATE and On The Issues scores from the 113th Congress
+        to produce a formula for inferring DW-NOMINATE (the preferred measure
+        of partisanship) from always-available OTI scores.
+
+    Input: a csv file with both DW-NOMINATE and OTI scores for each politician
+
+    Returns: beta, an array holding the coefficients of a linear regression
+        of DW-NOMINATE on OTI.
+
+    Result should be: 
+        beta = array([0.08356, 0.01157, -0.00101])
+
+    Corresponding equation:
+        DW-NOMINATE = 0.08356 + 0.01157(OTI econ score) - 0.00101(OTI social score)
+    """
+    fused = read_csv(fused_filename)
+    num_politicians = len(fused)
+
+    X_as_list = []
+    y_as_list = []
+    for role, state, party, first, last, dw, econ, social, alt_first, alt_last in fused:
+        X_as_list.append([1, econ, social]) # 1 creates the constant term in the regression
+        y_as_list.append(dw)
+    X = np.array(X_as_list)
+    y = np.array(y_as_list)
+    beta = np.linalg.lstsq(X, y)[0]
+    return beta
+
+
+# Coefficients of the regression above
+CONSTANT = 0.08356
+ECON_COEF = 0.01157
+SOCIAL_COEF = -0.0101
+
+
+def create_final_scores_file(dw_nominate_filename, currently_in_office_filename):
+    """
+    Creates the final csv file holding politician info and DW-NOMINATE scores,
+        either official or imputed from On The Issues scores.
+
+    Input: 
+        dw_nominate_filename: csv file with info on the 113th Congress
+            Everyone has DW-NOMINATE score
+        currently_in_office_filename: csv file with info on the 115th Congress
+            Some have DW-NOMINATE scores, but others don't
+    """
+    congress_113 = read_csv(dw_nominate_filename)
+    to_be_written = []
+    already_added = []
+    for role, state, party, first, last, dw, alt_first, alt_last in congress_113:
+        to_be_written.append([role, state, party, first, last, dw, alt_first, alt_last])
+        already_added.append(first + " " + last)
+
+    congress_115 = read_csv(currently_in_office_filename)
+    for role, state, party, first, last, dw, alt_first, alt_last in congress_115:
+        full_name = first + " " + last
+        if full_name not in already_added:
+            if dw:
+                imputed_dw = dw
+            else:
+                econ_oti, social_oti = get_oti_score(first, last)
+                if econ_oti == None or social_oti == None:
+                    print(first, last, "doesn't have an OTI score")
+                else:
+                    imputed_dw = CONSTANT + ECON_COEF * econ_oti + SOCIAL_COEF * social_oti
+                    imputed_dw = round(imputed_dw, 3)
+            to_be_written.append([role, state, party, first, last, imputed_dw, alt_first, alt_last])
+            already_added.append(first + " " + last)
+
+    write_csv(to_be_written, "final_scores_file.csv")
+    return None
+
+
+
+
 
 
 
