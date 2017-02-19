@@ -12,7 +12,7 @@ chrome.runtime.onMessage.addListener(
     console.log(sender.tab ?
                 "from a content script:" + sender.tab.url:
                 "from the extension");
-    console.log(request.data.all_text.replace(/(\r\n|\n|\r)/gm,"\\n").replace(/"/gm,/'/));
+    console.log(request.data.all_text.replace(/(\r\n|\n|\r)/gm,"\\n").replace(/"/gm,"'"));
     if (request.type == "dom-loaded")
       sendResponse({farewell: "Goodbye"});
 
