@@ -12,10 +12,13 @@ console.log(html.slice(1, 10));
 var s = "1h3df873ab0c";
 //var result = regex.search(s);
 //console.log(result);
-
-var re = /[0-9]*/;
-console.log(re.exec(s));
-
+var matches = new Array();
+var re = new RegExp("[0-9]+", "g");
+while((match = re.exec(s)) !== null){
+	matches.push(match);
+}
+console.log(matches);
+/*
 var myRe = /d(b+)d/g;
 var myArray = myRe.exec('cdbbdbsbzdbd');
 console.log('The value of lastIndex is ' + myRe.lastIndex);
@@ -35,3 +38,4 @@ var handler = new htmlparser.DefaultHandler(function (error, dom) {
 var parser = new htmlparser.Parser(handler);
 parser.parseComplete(rawHtml);
 sys.puts(sys.inspect(handler.dom, false, null));
+*/
