@@ -12,7 +12,8 @@ chrome.runtime.onMessage.addListener(
     console.log(sender.tab ?
                 "from a content script:" + sender.tab.url:
                 "from the extension");
-    console.log(request.data.all_text.replace(/(\r\n|\n|\r)/gm,"\\n").replace(/"/gm,"'"));
+    var full_text = request.data.all_text.replace(/(\r\n|\n|\r)/gm,"\\n").replace(/"/gm,"'");
+    console.log(full_text)
     if (request.type == "dom-loaded")
       sendResponse({farewell: "Goodbye"});
 
