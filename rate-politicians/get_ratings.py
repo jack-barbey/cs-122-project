@@ -254,7 +254,7 @@ def convert_to_js(csvfile):
         wr = csv.writer(f, delimiter=";")
         wr.writerow(["var scores = ["])
         for row in politicians:
-            wr.writerow([str(row)])
+            wr.writerow([str(row) + ","])
         wr.writerow("]")
 
     return None
