@@ -382,7 +382,7 @@ var scores = [
 ['House', 'TX', 'R', 'Mac', 'Thornberry', '0.568', '', ''],
 ['House', 'TX', 'R', 'Randy', 'Weber', '0.828', '', ''],
 ['House', 'TX', 'D', 'Ruben', 'Hinojosa', '-0.324', '', ''],
-"['House', 'TX', 'D', 'Beto', ""O'Rourke"", '-0.402', '', ''],"
+['House', 'TX', 'D', 'Beto', "O'Rourke", '-0.402', '', ''],
 ['House', 'TX', 'R', 'Bill', 'Flores', '0.624', '', ''],
 ['House', 'TX', 'D', 'Sheila', 'Jackson Lee', '-0.451', '', ''],
 ['House', 'TX', 'R', 'Randy', 'Neugebauer', '0.656', '', ''],
@@ -596,7 +596,7 @@ var scores = [
 ['House', 'AL', 'R', 'Gary', 'Palmer', '0.903', '', ''],
 ['House', 'AR', 'R', 'French', 'Hill', '0.303', '', ''],
 ['House', 'AR', 'R', 'Bruce', 'Westerman', '0.836', '', ''],
-"['House', 'AZ', 'D', 'Tom', ""O'Halleran"", '-0.497', '', ''],"
+['House', 'AZ', 'D', 'Tom', "O'Halleran", '-0.497', '', ''],
 ['House', 'AZ', 'R', 'Martha', 'McSally', '0.513', '', ''],
 ['House', 'AZ', 'R', 'Andy', 'Biggs', '0.532', '', ''],
 ['House', 'AZ', 'D', 'Ruben', 'Gallego', '-0.474', '', ''],
