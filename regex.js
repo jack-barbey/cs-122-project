@@ -51,7 +51,9 @@ function find_names_in_article(article_array){
 
     // FIRST GET ARRAY OF POLITICIANS' NAMES
     // ("rate-politicians/final_scores_file.csv")
+    for (i = 0; i < 10; i++){
+    	console.log("10")
+    }
 }
-
 
 
