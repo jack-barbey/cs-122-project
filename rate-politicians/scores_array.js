@@ -1,4 +1,4 @@
-var scores = [
+var SCORES = [
 ['House', 'AK', 'R', 'Don', 'Young', '0.28', '', ''],
 ['House', 'AL', 'R', 'Jo', 'Bonner', '0.395', '', ''],
 ['House', 'AL', 'R', 'Bradley', 'Byrne', '0.581', '', ''],
