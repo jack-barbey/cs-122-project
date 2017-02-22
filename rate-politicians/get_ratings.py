@@ -237,14 +237,12 @@ def create_final_scores_file(dw_nominate_filename, currently_in_office_filename)
 
 def convert_to_js(csvfile):
     """
-    As it turns out, reading a csv file in Javascript is difficult!
-    So, this function converts the csv file made above into a neat,
-    copy-paste-able format for a Javascript array of arrays.
+    As it turns out, reading a csv file in Javascript is difficult! So,
+    this function converts the csv file made above into a JS array of arrays.
 
     Input: final_scores_file.csv
     
-    Returns: same information in a different csv file and format,
-        to be used as a JS array of arrays
+    Returns: same information in a JS file, scores_array.js
     """
     politicians = read_csv(csvfile)
     # Add quotes to force interpretation as string
@@ -252,11 +250,11 @@ def convert_to_js(csvfile):
         for field in politician:
             field = '"' + field + '"'
 
-    with open("scores_array.csv", "w") as f:
-        wr = csv.writer(f)
-        wr.writerow("var scores = [")
+    with open("scores_array.js", "w") as f:
+        wr = csv.writer(f, delimiter=";")
+        wr.writerow(["var scores = ["])
         for row in politicians:
-            wr.writerow("[" + row + "]")
+            wr.writerow([str(row)])
         wr.writerow("]")
 
     return None
