@@ -42,12 +42,15 @@ function get_article(full_text){
 };
 
 
+
 function get_sentences(article_array){
         var finalArray = [];
     for(var i = 0; i < article_array.length; i++){
         var strarray = article_array[i].split('.');
         for (var j = 0; j < strarray.length; j ++){
-            finalArray.push(strarray[j]);
+            if (strarray[j].length > 3){
+                finalArray.push(strarray[j])
+                };
         };
     }
     return finalArray;
