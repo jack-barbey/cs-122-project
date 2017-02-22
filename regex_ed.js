@@ -39,8 +39,19 @@ function get_article(full_text){
     var article_array = paragraph_array.slice(first_full_line, last_line + 1)
     console.log(article_array)
     return article_array
-}
+};
 
+
+function get_sentences(article_array){
+        var finalArray = [];
+    for(var i = 0; i < article_array.length; i++){
+        var strarray = article_array[i].split('.');
+        for (var j = 0; j < strarray.length; j ++){
+            finalArray.push(strarray[j]);
+        };
+    }
+    return finalArray;
+}; 
 
 
 function find_names_in_article(article_array){
@@ -51,6 +62,7 @@ function find_names_in_article(article_array){
 
     // FIRST GET ARRAY OF POLITICIANS' NAMES
     // ("rate-politicians/final_scores_file.csv")
+
 }
 
 
