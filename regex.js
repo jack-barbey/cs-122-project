@@ -763,6 +763,11 @@ var SCORES = [
 ['Senate', 'SD', 'R', 'Mike', 'Rounds', '0.627', '', ''],
 ]
 
+function is_name_in_string(paragraph_string, first, last){
+    var pattern = new RegExp(first + " " + last);
+    var is_in_string = pattern.test(paragraph_string);
+    return is_in_string;
+}
 
 function find_names_in_article(article_array){
     /*
@@ -803,12 +808,27 @@ function find_names_in_article(article_array){
     }
 
 // run as an example
-find_names_in_article(get_article(example_text))
+// find_names_in_article(get_article(example_text))
 
-function is_name_in_string(paragraph_string, first, last){
-    var pattern = new RegExp(first + " " + last);
-    var is_in_string = pattern.test(paragraph_string);
-    return is_in_string;
-}
+function get_sentences(article_array){
+    var rv = []
+    for (i = 0; i < article_array.length; i++){
+        var sentences_array = article_array[i].match(/[^\.!\?]+[\.!\?]+/g);
+        if (sentences_array == null){
+            // No ., !. or ? in paragraph
+            sentences_array = [article_array[i]];
+        }
+        for (j = 0; j < sentences_array.length; j++){
+            rv.push(sentences_array[j]);
+        // }
+        }
+    }
+    return rv;
+}; 
+
+// run as an example
+console.log(get_sentences(get_article(example_text)));
+
+
 
 
