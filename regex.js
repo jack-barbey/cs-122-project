@@ -4,209 +4,6 @@ var example_text = "\nElection ResultsNationWorldOur Team\nTrump's Sweden commen
 var sentiment = require("sentiment")
 
 
-function get_article(full_text){
-    /*
-    Takes text from article found using .all_text() method.
-    Newlines must be replaced with literal "\n" first.
-
-    Returns array of paragraphs representing (hopefully) the text
-    in the actual article, without advertisements or links.
-    */
-    var paragraph_array = full_text.split("\n")
-    paragraph_array = paragraph_array.filter(Boolean) // removes empty lines
-
-    var min_paragraph_length = 125
-    var max_consec_short_lines = 3
-    var first_full_line = -1
-    var last_line = -1
-    for (i = 0; i < paragraph_array.length; i++){
-        if (paragraph_array[i].length > min_paragraph_length){
-            if (first_full_line == -1){
-            first_full_line = i
-            var consec_short_lines = 0 // start counter of non-article lines at 0
-            } else {
-            consec_short_lines = 0 // reset counter if necessary 
-            }
-        } else if (first_full_line != -1){
-            consec_short_lines += 1
-            if (consec_short_lines == max_consec_short_lines){
-            last_line = i - max_consec_short_lines
-            }
-            }
-        }
-    if (first_full_line == -1){
-        return []
-    }
-    else if (last_line == -1){
-        last_line = paragraph_array.length - 1
-    }
-    var article_array = paragraph_array.slice(first_full_line, last_line + 1)
-    //console.log(article_array)
-    return article_array
-}
-
-//console.log(get_article(example_text));
-
-/*
-SCORES holds the information about all politicians in our dataset.
-Unfortunately, it must be defined above the functions in which it is used.
-Keep scrolling!
-*/
-
-
-function find_names_in_article_mod(article_array){
-    /*
-    Takes an array of paragraphs in an article.
-    Returns a set of politicians found,
-        with each politician's full info in an array.
-
-    Example: could return
-        Set {[ 'President', 'US', 'R', 'Donald', 'Trump', '0.555', '', '' ]}
-    */
-    politicians_in_article = new Set();
-    
-    functioning_names = new Set();
-
-
-    for (i = 0; i < SCORES.length; i++){
-        var first = SCORES[i][3];
-        var last = SCORES[i][4];
-        var alt_first = SCORES[i][6];
-        var alt_last = SCORES[i][7];
-
-        var combos = [[first, last]];
-        if (alt_last){
-            combos.push([first, alt_last]);
-        }
-        
-        if (alt_first){
-            combos.push([alt_first, last]);
-            if (alt_last){
-                combos.push([alt_first, alt_last]);
-            }
-        }
-        for (j = 0; j < article_array.length; j++){
-            var text = article_array[j];
-            for (k = 0; k < combos.length; k++){
-                if (is_name_in_string(text, combos[k][0] + " " + combos[k][1])){
-                    politicians_in_article.add(SCORES[i]);
-                    functioning_names.add([combos[k][0], combos[k][1]]);
-
-                }
-            }
-        }
-        };
-        console.log(politicians_in_article);
-        let search_names = Array.from(functioning_names);
-        return [politicians_in_article, search_names];
-    };
-
-
-function is_name_in_string(paragraph_string, name){
-    var pattern = new RegExp(name);
-    var is_in_string = pattern.test(paragraph_string);
-    return is_in_string;
-}
-
-
-
-
-// run as an example
-// find_names_in_article(get_article(example_text))
-
-function get_sentences(article_array){
-    var rv = []
-    for (i = 0; i < article_array.length; i++){
-        var sentences_array = article_array[i].match(/[^\.!\?]+[\.!\?]+/g);
-        if (sentences_array == null){
-            // No ., !. or ? in paragraph
-            sentences_array = [article_array[i]];
-        }
-        for (j = 0; j < sentences_array.length; j++){
-            rv.push(sentences_array[j]);
-        // }
-        }
-    }
-    return rv;
-}; 
-
-// run as an example
-console.log(get_sentences(get_article(example_text)));
-
-function Politician(first, last, alternate){
-    this.ref = last;
-    this.name = first + " " + last;
-    this.altname = alternate;
-    this.sentiment = 0;
-    this.statements = [];
-    };
-
-
-
-
-//variable data here refers to the result you would get using the function find_names_in_article_mod
-var sentiment_analysis = function(sentences, data){
-    var politicians = {};
-    var first = 3;
-    var last = 4;
-    var alt_first = 6;
-    var alt_last = 7;
-    let names = Array.from(data[0]);
-
-    //Creating a dictionary of all the politicians in the article
-    for (var i = 0; i < names.length; i++){
-        var alternate_name = names[i][alt_first] + " " + names[i][alt_last];
-        politicians[names[i][last]] = new Politician(names[i][first], names[i][last], alternate_name);
-        }
-
-    //Now using this dictionary to feed all the sentences related to him
-    var person = "";
-    var references = data[1];
-    console.log(references);
-    console.log(1);
-    for (var j = 0; j < sentences.length; j++){
-    	for (var s = 0; s < references.length; s++){
-    		if (is_name_in_string(sentences[j], references[s][0] + " " + references[s][1])){
-    			person = reference[s][1]
-    		};
-    	};
-    	console.log(person)
-    	if (person != ""){
-    	if (is_pronoun_in_string(sentences[j], person)){
-    		politicians[person].statements.push(sentences[j]);
-    	};
-    };
-};
-    
-    return politicians
-    };
-
-sentiment_analysis(sentences, names)
-
-
-var article = get_article(example_text);
-var names = find_names_in_article_mod(article);
-var sentences = get_sentences(article);
-sentiment_analysis(sentences, names)
-
-
-function is_pronoun_in_string(paragraph_string, last){
-	var criteria = "/he|He|She|she|" + last + "/"
-    var pattern = new RegExp(criteria);
-    var is_in_string = pattern.test(paragraph_string);
-    return is_in_string;
-};
-
-
-
-
-
-//sentiment_analysis(sentences, names)
-
-
-
-
-
 
 
 
@@ -922,3 +719,205 @@ var SCORES = [
 ['Senate', 'NV', 'D', 'Catherine', 'Cortez Masto', '-0.534', '', ''],
 ['Senate', 'SD', 'R', 'Mike', 'Rounds', '0.627', '', ''],
 ]
+
+
+function get_article(full_text){
+    /*
+    Takes text from article found using .all_text() method.
+    Newlines must be replaced with literal "\n" first.
+
+    Returns array of paragraphs representing (hopefully) the text
+    in the actual article, without advertisements or links.
+    */
+    var paragraph_array = full_text.split("\n")
+    paragraph_array = paragraph_array.filter(Boolean) // removes empty lines
+
+    var min_paragraph_length = 125
+    var max_consec_short_lines = 3
+    var first_full_line = -1
+    var last_line = -1
+    for (i = 0; i < paragraph_array.length; i++){
+        if (paragraph_array[i].length > min_paragraph_length){
+            if (first_full_line == -1){
+            first_full_line = i
+            var consec_short_lines = 0 // start counter of non-article lines at 0
+            } else {
+            consec_short_lines = 0 // reset counter if necessary 
+            }
+        } else if (first_full_line != -1){
+            consec_short_lines += 1
+            if (consec_short_lines == max_consec_short_lines){
+            last_line = i - max_consec_short_lines
+            }
+            }
+        }
+    if (first_full_line == -1){
+        return []
+    }
+    else if (last_line == -1){
+        last_line = paragraph_array.length - 1
+    }
+    var article_array = paragraph_array.slice(first_full_line, last_line + 1)
+    //console.log(article_array)
+    return article_array
+}
+
+//console.log(get_article(example_text));
+
+/*
+SCORES holds the information about all politicians in our dataset.
+Unfortunately, it must be defined above the functions in which it is used.
+Keep scrolling!
+*/
+
+
+function find_names_in_article_mod(article_array){
+    /*
+    Takes an array of paragraphs in an article.
+    Returns a set of politicians found,
+        with each politician's full info in an array.
+
+    Example: could return
+        Set {[ 'President', 'US', 'R', 'Donald', 'Trump', '0.555', '', '' ]}
+    */
+    politicians_in_article = new Set();
+    
+    functioning_names = new Set();
+
+
+    for (i = 0; i < SCORES.length; i++){
+        var first = SCORES[i][3];
+        var last = SCORES[i][4];
+        var alt_first = SCORES[i][6];
+        var alt_last = SCORES[i][7];
+
+        var combos = [[first, last]];
+        if (alt_last){
+            combos.push([first, alt_last]);
+        }
+        
+        if (alt_first){
+            combos.push([alt_first, last]);
+            if (alt_last){
+                combos.push([alt_first, alt_last]);
+            }
+        }
+        for (j = 0; j < article_array.length; j++){
+            var text = article_array[j];
+            for (k = 0; k < combos.length; k++){
+                if (is_name_in_string(text, combos[k][0] + " " + combos[k][1])){
+                    politicians_in_article.add(SCORES[i]);
+                    functioning_names.add([combos[k][0], combos[k][1]]);
+
+                }
+            }
+        }
+        };
+        // console.log(politicians_in_article);
+        let search_names = Array.from(functioning_names);
+        return [politicians_in_article, search_names];
+    };
+
+
+function is_name_in_string(paragraph_string, name){
+    var pattern = new RegExp(name);
+    var is_in_string = pattern.test(paragraph_string);
+    return is_in_string;
+}
+
+
+
+
+// run as an example
+// find_names_in_article(get_article(example_text))
+
+function get_sentences(article_array){
+    var rv = []
+    for (i = 0; i < article_array.length; i++){
+        var sentences_array = article_array[i].match(/[^\.!\?]+[\.!\?]+/g);
+        if (sentences_array == null){
+            // No ., !. or ? in paragraph
+            sentences_array = [article_array[i]];
+        }
+        for (j = 0; j < sentences_array.length; j++){
+            rv.push(sentences_array[j]);
+        // }
+        }
+    }
+    return rv;
+}; 
+
+// run as an example
+// console.log(get_sentences(get_article(example_text)));
+
+function Politician(first, last, alternate){
+    this.ref = last;
+    this.name = first + " " + last;
+    this.altname = alternate;
+    this.sentiment = 0;
+    this.statements = [];
+    };
+
+
+
+
+//variable data here refers to the result you would get using the function find_names_in_article_mod
+var sentiment_analysis = function(sentences, data){
+    var politicians = {};
+    var first = 3;
+    var last = 4;
+    var alt_first = 6;
+    var alt_last = 7;
+    let names = Array.from(data[0]);
+
+    //Creating a dictionary of all the politicians in the article
+    for (var i = 0; i < names.length; i++){
+        var alternate_name = names[i][alt_first] + " " + names[i][alt_last];
+        politicians[names[i][last]] = new Politician(names[i][first], names[i][last], alternate_name);
+        }
+
+    //Now using this dictionary to feed all the sentences related to him
+    var person = "";
+    var references = data[1];
+    // console.log(references);
+    // console.log(1);
+    for (var j = 0; j < sentences.length; j++){
+    	for (var s = 0; s < references.length; s++){
+    		if (is_name_in_string(sentences[j], references[s][0] + " " + references[s][1])){
+    			person = references[s][1]
+    		};
+    	};
+    	// console.log(person)
+    	if (person != ""){
+    	if (is_pronoun_in_string(sentences[j], person)){
+    		politicians[person].statements.push(sentences[j]);
+    	};
+    };
+};
+    
+    return politicians
+    };
+
+
+
+var article = get_article(example_text);
+var names = find_names_in_article_mod(article);
+var sentences = get_sentences(article);
+sentiment_analysis(sentences, names)
+
+
+function is_pronoun_in_string(paragraph_string, last){
+	var criteria = "/he|He|She|she|" + last + "/"
+    var pattern = new RegExp(criteria);
+    var is_in_string = pattern.test(paragraph_string);
+    return is_in_string;
+};
+
+
+
+
+
+//sentiment_analysis(sentences, names)
+
+
+
