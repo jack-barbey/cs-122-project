@@ -722,12 +722,37 @@ var SCORES = [
 ]
 
 
+function Politician(scores_array){
+    /*
+    A class for storing the information of a single politician.
+    Using a row from the SCORES array of arrays, it creates an object
+    storing the same information in a more convenient way.
+
+    Edit this comment later to clarify!
+    */
+    this.role = scores_array[0];
+    this.state = scores_array[1];
+    this.party = scores_array[2];
+    this.first = scores_array[3];
+    this.last = scores_array[4];
+    this.score = scores_array[5];
+    this.alt_first = scores_array[6];
+    this.alt_last = scores_array[7];
+};
+
+// var p1 = new Politician(SCORES[100])
+// var p2 = new Politician(SCORES[100])
+// var s = new Set();
+// s.add(p1);
+// s.add(p2);
+// console.log(s);
+
 function get_article(full_text){
     /*
-    Takes text from article found using .all_text() method.
+    Takes text from webpage found using .all_text() method.
     Newlines must be replaced with literal "\n" first.
 
-    Returns array of paragraphs representing (hopefully) the text
+    Returns array of paragraphs representing the text
     in the actual article, without advertisements or links.
     */
     var paragraph_array = full_text.split("\n")
@@ -764,66 +789,90 @@ function get_article(full_text){
 
 //console.log(get_article(example_text));
 
+function get_row_with_name(first, last){
+    for (i = 0; i < SCORES.length; i++){
+        var row = SCORES[i];
+        if (row[3] == first || row[6] == first){
+            if (row[4] == last || row[7] == last){
+                return row;
+            }
+        }
+    }
+    // Reaches here only on error
+    console.log("Error: Couldn't find politician " + first + " " + last)
+    return []
+}
 
+// console.log(get_row_with_name("Thomas", "Suozzi"))
 
-function find_names_in_article(article_array){
+function find_politicians_in_article(article_array){
     /*
     Takes an array of paragraphs in an article.
-    Returns a set of politicians found,
-        with each politician's full info in an array.
 
-    Example: could return
-        Set {[ 'President', 'US', 'R', 'Donald', 'Trump', '0.555', '', '' ]}
+    Returns an array of Politician objects, one for each politician
+    mentioned in the article.
     */
-    politicians_in_article = new Set();
+    politicians_in_article = [];
     
-    functioning_names = new Set();
+    var politicians_seen = new Set();
 
-
+    // Iterate over all recognized politicians
     for (i = 0; i < SCORES.length; i++){
         var first = SCORES[i][3];
         var last = SCORES[i][4];
         var alt_first = SCORES[i][6];
         var alt_last = SCORES[i][7];
 
+        // List all possible combinations of first & last names
         var combos = [[first, last]];
         if (alt_last){
             combos.push([first, alt_last]);
         }
-        
         if (alt_first){
             combos.push([alt_first, last]);
             if (alt_last){
                 combos.push([alt_first, alt_last]);
             }
         }
+
+        // Iterate over all paragraphs in article
         for (j = 0; j < article_array.length; j++){
             var text = article_array[j];
+            // Iterate over all possible name combinations for the politician
             for (k = 0; k < combos.length; k++){
-                if (is_name_in_string(text, combos[k][0] + " " + combos[k][1])){
-                    politicians_in_article.add(SCORES[i]);
-                    functioning_names.add([combos[k][0], combos[k][1]]);
+                var f = combos[k][0];
+                var l = combos[k][1];
+                if (is_name_in_string(text, f + " " + l)){
+                    // Don't include same politician twice
+                    if (!(politicians_seen.has(combos))){
+                        politicians_seen.add(combos);
+                        var row = get_row_with_name(f, l);
+                        var pol = new Politician(row);
+                        politicians_in_article.push(pol);
+                    }
                 }
             }
         }
-    };
-    // console.log(politicians_in_article);
-    let search_names = Array.from(functioning_names);
-    return [politicians_in_article, search_names];
-    };
+    }
+    return politicians_in_article;
+}
 
 
 function is_name_in_string(paragraph_string, name){
-    var pattern = new RegExp(name);
-    var is_in_string = pattern.test(paragraph_string);
-    return is_in_string;
+    if (name == ""){
+        return false;
+    } else {
+        var pattern = new RegExp(name);
+        var is_in_string = pattern.test(paragraph_string);
+        return is_in_string;
+    }
 }
 
 
 
 
 // run as an example
-// find_names_in_article(get_article(example_text))
+// find_politicians_in_article(get_article(example_text))
 
 function get_sentences(article_array){
     var rv = []
@@ -844,74 +893,125 @@ function get_sentences(article_array){
 // run as an example
 // console.log(get_sentences(get_article(example_text)));
 
-function Politician(first, last, alternate){
-    this.ref = last;
-    this.name = first + " " + last;
-    this.altname = alternate;
-    this.sentiment = 0;
-    this.statements = [];
-};
 
 
+function get_sentiments(sentences, politicians){
+    /*
+    Finds the sentiment of each sentence mentioning a known politician.
 
+    Inputs:
+        sentences: an array of sentences from get_sentences()
+        politicians: an array of Politician objects from
+            find_politicians_in_article()
 
-//variable data here refers to the result you would get using the function find_names_in_article
-var sentiment_analysis = function(sentences, data){
-    var politicians = {};
-    var first = 3;
-    var last = 4;
-    var alt_first = 6;
-    var alt_last = 7;
-    let names = Array.from(data[0]);
-
-    //Creating a dictionary of all the politicians in the article
-    for (var i = 0; i < names.length; i++){
-        var alternate_name = names[i][alt_first] + " " + names[i][alt_last];
-        politicians[names[i][last]] = new Politician(names[i][first], names[i][last], alternate_name);
+    Returns an array of arrays, where the inner array contains:
+        A Politician object,
+        Sentence mentioning the politician,
+        Sentiment score for that sentence
+    */
+    rv = []
+    for (i = 0; i < sentences.length; i++){
+        sentence = sentences[i];
+        for (j = 0; j < politicians.length; j++){
+            p = politicians[j];
+            if (is_name_in_string(sentence, p.last) || 
+                is_name_in_string(sentence, p.alt_last)){
+                // NEED TO GET SENTIMENT FUNCTION WORKING
+                var sentiment = 3; // sentiment(sentence);
+                rv.push([p, sentence, sentiment]);
+            }
+        }
     }
-
-    //Now using this dictionary to feed all the sentences related to him
-    var person = "";
-    var references = data[1];
-    // console.log(references);
-    // console.log(1);
-    for (var j = 0; j < sentences.length; j++){
-        for (var s = 0; s < references.length; s++){
-            if (is_name_in_string(sentences[j], references[s][0] + " " + references[s][1])){
-                person = references[s][1]
-            };
-        };
-        // console.log(person)
-        if (person != ""){
-            if (is_pronoun_in_string(sentences[j], person)){
-                politicians[person].statements.push(sentences[j]);
-            };
-        };
-    };
     
-    return politicians
-};
-
+    return rv;
+}
 
 
 var article = get_article(example_text);
-var names = find_names_in_article(article);
+var names = find_politicians_in_article(article);
 var sentences = get_sentences(article);
-sentiment_analysis(sentences, names)
+var sentiments = get_sentiments(sentences, names)
+// console.log(sentiments)
 
 
-function is_pronoun_in_string(paragraph_string, last){
-    var criteria = "/he|He|She|she|" + last + "/"
-    var pattern = new RegExp(criteria);
-    var is_in_string = pattern.test(paragraph_string);
-    return is_in_string;
-};
+function calc_bias_score(sentiments){
+    /*
+    Calculates a bias score based on sentiments.
+
+    Input is the output of get_sentiments(), an array of arrays containing:
+        A Politician object,
+        Sentence mentioning the politician,
+        Sentiment score for that sentence
+
+    Returns a bias score, along with various other statistics        
+    */
+    var observations = sentiments.length
+    var num_bins = 20;
+    var bins = [];
+    for (i = 0; i < num_bins; i++){
+        bins.push(1 / num_bins); // prior is uniform distribution
+    }
+
+    var span = 4; // adjust all bins within (span - 1) of the closest bin
+    for (i = 0; i < sentiments.length; i++){
+        politician = sentiments[i][0];
+        sentence = sentiments[i][1];
+        sentiment = sentiments[i][2];
+        sent_factor = sentiment / 10;
+
+        ideology = politician.score; // scale of -1 (liberal) to 1
+        normalized = (parseFloat(ideology) + 1) / 2; // scale of 0 to 1
+        closest_bin = Math.floor(normalized * num_bins);
+        for (j = closest_bin - span; j <= closest_bin + span; j++){
+            if (j >= 0 && j < num_bins){
+                dist_factor = 1 - Math.abs(j - closest_bin) / span;
+                bins[j] += bins[j] * sent_factor * dist_factor;
+                // Note: bins[j] will decrease if sent_factor < 0
+                // IS THIS FORMULA TOO AGGRESSIVE?
+                // Especially with positive emotions...maybe that's good though
+            }
+        }
+    }
+    // Normalize resulting distribution
+    var sum = 0
+    for (i = 0; i < num_bins; i++){
+        sum += bins[i];
+    }
+    for (i = 0; i < num_bins; i++){
+        bins[i] = bins[i] / sum;
+    }
+
+    // Get cumulative distribution and the median,
+    // lower quartile, and upper quartile in terms of bin #
+    var cum_dist = [bins[0]]
+    var lower_q = 0
+    var median = 0
+    var upper_q = 0
+    for (i = 1; i < num_bins; i++){
+        cum_dist.push(cum_dist[i - 1] + bins[i]);
+        if (cum_dist[i] < 0.25){ lower_q = i + 1};
+        if (cum_dist[i] < 0.50){ median = i + 1};
+        if (cum_dist[i] < 0.75){ upper_q = i + 1};
+    }
+
+    return [lower_q, median, upper_q, observations]
+}
+
+[lower, med, upper, observations] = calc_bias_score(sentiments)
+console.log(lower, med, upper, observations)
+
+// function is_pronoun_in_string(paragraph_string, last){
+//     var criteria = "/he|He|She|she|" + last + "/"
+//     var pattern = new RegExp(criteria);
+//     var is_in_string = pattern.test(paragraph_string);
+//     return is_in_string;
+// };
 
 
 
 
 
-//sentiment_analysis(sentences, names)
+//get_sentiments(sentences, names)
 
 
 
