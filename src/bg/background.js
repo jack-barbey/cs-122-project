@@ -9,12 +9,15 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    console.log(sender.tab ?
-                "from a content script:" + sender.tab.url:
-                "from the extension");
     var full_text = request.data.all_text.replace(/(\r\n|\n|\r)/gm,"\\n").replace(/"/gm,"'");
-    console.log(full_text)
-    if (request.type == "dom-loaded")
-      sendResponse({farewell: "Goodbye"});
+    console.log(full_text);
+
 
 });
+
+function get_text() {
+  return full_text
+};
+
+
+// http://stackoverflow.com/questions/8499376/chrome-extension-get-entire-text-content-of-the-current-tab
