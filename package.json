@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/pwiggin/cs-122-project#readme",
   "dependencies": {
+    "flesch-kincaid": "^1.0.0",
     "sentiment": "^3.0.0"
   }
 }
