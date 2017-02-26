@@ -930,11 +930,11 @@ function get_sentiments(sentences, politicians){
 }
 
 
-var article = get_article(example_huffpo);
-var names = find_politicians_in_article(article);
-var sentences = get_sentences(article);
-var sentiments = get_sentiments(sentences, names)
-// console.log(sentiments)
+// var article = get_article(example_cnn);
+// var names = find_politicians_in_article(article);
+// var sentences = get_sentences(article);
+// var sentiments = get_sentiments(sentences, names)
+// // console.log(sentiments)
 
 
 function calc_bias_score(sentiments){
@@ -999,9 +999,19 @@ function calc_bias_score(sentiments){
 
     return [lower_q, median, upper_q, observations]
 }
-[lower, med, upper, observations] = calc_bias_score(sentiments)
-console.log(lower, med, upper, observations)
+// [lower, med, upper, observations] = calc_bias_score(sentiments)
+// console.log(lower, med, upper, observations)
 
+
+
+function go(full_text){
+	var article_array = get_article(full_text);
+	var sentences = get_sentences(article_array);
+	var pols_in_article = find_politicians_in_article(article_array);
+	var feelings = get_sentiments(sentences, pols_in_article);
+	var bias = calc_bias_score(feelings);
+	return bias; // returns [lower_quartile, median, upper_quartile, observations]
+}
 
 
 
