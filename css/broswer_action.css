@@ -1,0 +1,11 @@
+p {
+  background-color: blue;
+  font-style: italic;
+}
+
+#mainPopup {
+  padding: 10px;
+  height: 400px;
+  width: 600px;
+  font-family: "Courier New", Courier, monospace
+}
