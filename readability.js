@@ -82,31 +82,31 @@ function readability(score){
 
 	if (score > 90){
 		text = "5th Grade Reading Level";
-	};
+	}
 
 	else if (score <= 90 && score > 80){
-		text = "6th Grade Reading Level"
-	};
+		text = "6th Grade Reading Level";
+	}
 
 	else if (score <= 80 && score > 70){
-		text = "7th Grade Reading Level"
-	};
+		text = "7th Grade Reading Level";
+	}
 
 	else if (score <= 70 && score > 60){
-		text = "9th Grade Reading Level"
-	};
+		text = "9th Grade Reading Level";
+	}
 
 	else if (score <= 60 && score > 50){
-		text = "12th Grade Reading Level"
-	};
+		text = "12th Grade Reading Level";
+	}
 
 	else if (score <= 50 && score > 30){
-		text = "College Reading Level"
-	};
+		text = "College Reading Level";
+	}
 
-	else{
-		text = "College Graduate Reading Level"
-	};
+	else {
+		text = "College Graduate Reading Level";
+	}
 
 	return text;
 };

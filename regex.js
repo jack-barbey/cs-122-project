@@ -870,9 +870,6 @@ function is_name_in_string(paragraph_string, name){
     }
 }
 
-
-
-
 // run as an example
 // find_politicians_in_article(get_article(example_text))
 
