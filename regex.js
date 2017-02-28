@@ -1004,11 +1004,29 @@ function calc_bias_score(sentiments){
 
 
 function isaWord(value){
+	/*
+	Checks whether the word is an actual English word
+
+	Input: 
+		value: (str) word to be evaluated 
+
+	Output:
+		Boolean indicating whether the value is a word or not 
+	*/
 	return value.length > 1 && value !=- '';
 };
 
 
 function get_words(sentences){
+	/*
+	Converts the sentences into an array of individual words 
+
+	Input:
+		sentences: (array of str) Sentences to extract words from 
+
+	Output:
+		words: (array of str) array of words from the sentences
+	*/
 	var words = [];		
 		for (var i = 0; i < sentences.length; i++){
 			var split = sentences[i].split(" ");
@@ -1016,6 +1034,8 @@ function get_words(sentences){
 				words.push(split[j]);
 			};
 	};
+
+	//Extra step necessary to make sure the array contains actual words
 	words = words.filter(isaWord);
 
 	return words;
@@ -1023,6 +1043,16 @@ function get_words(sentences){
 
 
 function readability(score){
+	/*
+	Given a score, returns a text message indicative of how difficult it 
+	is to read a certain article 
+
+	Input:
+		score: (float) Flesh-Kincaid Readability score  
+
+	Output:
+		text: (str) text letting the user know of the difficulty
+	*/
 	var text = "";
 
 	if (score > 90){text = "5th Grade Reading Level";}
@@ -1037,6 +1067,17 @@ function readability(score){
 };
 
 function Flesh_Kincaid(sentences){
+	/*
+	Given an array of sentences, calculates the Flesh_Kincaid readability
+	score and estimates how hard the given article is to read 
+
+	Input:
+		sentences: (array of str) Sentences from an article
+
+	Output:
+		Returns an array of length 2 that has the readability score and 
+		text indicating how hard it is to read the given article
+	*/
 	var num_sentences = sentences.length;
 	var words = get_words(sentences);
 	var num_words = words.length;
