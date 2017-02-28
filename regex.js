@@ -1025,33 +1025,13 @@ function get_words(sentences){
 function readability(score){
 	var text = "";
 
-	if (score > 90){
-		text = "5th Grade Reading Level";
-	}
-
-	else if (score <= 90 && score > 80){
-		text = "6th Grade Reading Level";
-	}
-
-	else if (score <= 80 && score > 70){
-		text = "7th Grade Reading Level";
-	}
-
-	else if (score <= 70 && score > 60){
-		text = "9th Grade Reading Level";
-	}
-
-	else if (score <= 60 && score > 50){
-		text = "12th Grade Reading Level";
-	}
-
-	else if (score <= 50 && score > 30){
-		text = "College Reading Level";
-	}
-
-	else {
-		text = "College Graduate Reading Level";
-	}
+	if (score > 90){text = "5th Grade Reading Level";}
+	else if (score <= 90 && score > 80){text = "6th Grade Reading Level";}
+	else if (score <= 80 && score > 70){text = "7th Grade Reading Level";}
+	else if (score <= 70 && score > 60){text = "9th Grade Reading Level";}
+	else if (score <= 60 && score > 50){text = "12th Grade Reading Level";}
+	else if (score <= 50 && score > 30){text = "College Reading Level";}
+	else {text = "College Graduate Reading Level";}
 
 	return text;
 };
@@ -1074,11 +1054,6 @@ function Flesh_Kincaid(sentences){
 }; 
 
 
-
-
-
-
-
 function go(full_text){
 	var article_array = get_article(full_text);
 	var sentences = get_sentences(article_array);
@@ -1086,7 +1061,7 @@ function go(full_text){
 	var feelings = get_sentiments(sentences, pols_in_article);
 	var bias = calc_bias_score(feelings);
 	return bias; // returns [lower_quartile, median, upper_quartile, observations]
-}
+};
 
 
 
