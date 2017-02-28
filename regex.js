@@ -1003,6 +1003,81 @@ function calc_bias_score(sentiments){
 // console.log(lower, med, upper, observations)
 
 
+function isaWord(value){
+	return value.length > 1 && value !=- '';
+};
+
+
+function get_words(sentences){
+	var words = [];		
+		for (var i = 0; i < sentences.length; i++){
+			var split = sentences[i].split(" ");
+			for (var j = 0; j < split.length; j++){
+				words.push(split[j]);
+			};
+	};
+	words = words.filter(isaWord);
+
+	return words;
+};
+
+
+function readability(score){
+	var text = "";
+
+	if (score > 90){
+		text = "5th Grade Reading Level";
+	}
+
+	else if (score <= 90 && score > 80){
+		text = "6th Grade Reading Level";
+	}
+
+	else if (score <= 80 && score > 70){
+		text = "7th Grade Reading Level";
+	}
+
+	else if (score <= 70 && score > 60){
+		text = "9th Grade Reading Level";
+	}
+
+	else if (score <= 60 && score > 50){
+		text = "12th Grade Reading Level";
+	}
+
+	else if (score <= 50 && score > 30){
+		text = "College Reading Level";
+	}
+
+	else {
+		text = "College Graduate Reading Level";
+	}
+
+	return text;
+};
+
+function Flesh_Kincaid(sentences){
+	var num_sentences = sentences.length;
+	var words = get_words(sentences);
+	var num_words = words.length;
+	var num_syl = 0;
+
+	for (var i = 0; i < words.length; i++){
+		var word_syl = syllable(words[i]);
+		num_syl += word_syl;
+	};
+
+	var score = 206.835 - 1.015 * (num_words / num_sentences) - 84.6 * (num_syl / num_words);
+	var text = readability(score);
+
+	return [score, text];
+}; 
+
+
+
+
+
+
 
 function go(full_text){
 	var article_array = get_article(full_text);
