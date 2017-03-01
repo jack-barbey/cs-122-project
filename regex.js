@@ -956,7 +956,7 @@ function calc_bias_score(sentiments){
     sentiments.sort(function(a,b) {
         return Math.abs(b[2]) - Math.abs(a[2]);
     });
-    var top_three = sentiments.slice(0, 3)
+    var top_five = sentiments.slice(0, 5)
 
     // Normalize resulting distribution
     var sum = 0
@@ -981,7 +981,7 @@ function calc_bias_score(sentiments){
     }
 
     bias_score = median * 10
-    return [bias_score, observations, top_three]
+    return [bias_score, observations, top_five]
 }
 
 
@@ -1087,7 +1087,7 @@ function go(full_text){
     var pols_in_article = find_politicians_in_article(article_array);
     var feelings = get_sentiments(sentences, pols_in_article);
     var bias_object = calc_bias_score(feelings);
-    // [bias_score, observations, top_three]
+    // [bias_score, observations, top_five]
     var fk_object = Flesh_Kincaid(sentences);
     // [fk_score, text]
     return [bias_object, fk_object];
