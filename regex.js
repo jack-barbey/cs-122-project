@@ -3,6 +3,7 @@ var example_breitbart = "\nHOMESUBSCRIBE\nBIG GOVERNMENTBIG JOURNALISMBIG HOLLYW
 var example_huffpo = "EDITION\nUS\n\nNEWS\nPOLITICS\nENTERTAINMENT\nLIFESTYLE\nIMPACT\nVOICES\nVIDEO\nALL SECTIONS\nPOLITICS 02/25/2017 05:07 pm ET | Updated 4 hours ago\nDonald Trump Says He Will Not Attend Annual White House Correspondents Dinner\nThe president continues to stoke his feud with the media.\nBy Sam Levine\n7.3k\n480\nPresident Donald Trump said Saturday that he will not attend the annual White House correspondents dinner this year.\n\nI will not be attending the White House Correspondents’ Association Dinner this year. Please wish everyone well and have a great evening!\n\n— Donald J. Trump (@realDonaldTrump) February 25, 2017\nThe annual gathering, hosted by the White House Correspondents Association, is usually attended by the president, reporters from media outlets that cover the White House, and celebrities.\n\nTrump’s announcement, which gave no reason, came after a sustained attack on the media. He recently called news organizations “the enemy,” and the White House on Friday excluded several major outlets, The Huffington Post among them, from a press briefing.\n\nBloomberg and Vanity Fair, which host one of the hottest parties in Washington the weekend of the annual dinner, have announced they would not hold the event this year. CNN, frequently criticized by Trump, has been contemplating sitting out the dinner.\n\nAs HuffPost’s Jason Linkins pointed out, media hand-wringing over the dinner may be a “tired genre,” as the event has long been an insular and clubby affair between newsmakers and Beltway journalists.\n\nThe annual dinner also features a roast of the president by a comedian ― something that may not have gone over with the notoriously thin-skinned Trump.\n\nJeff Mason, White House Correspondents Association president, acknowledged Trump’s announcement. “We look forward to shining a spotlight at the dinner on some of the best political journalism of the past year and recognizing the promising students who represent the next generation of our profession,” Mason said in a statement. \n\nTrump has been stung by the event before ― in 2011, when then-President Barack Obama roasted him. At the time, Trump had been falsely claiming that Obama was not born in the United States and was pushing him to release his birth certificate.\n\nThe first White House correspondents dinner was held in 1921, and the first president to attend was Calvin Coolidge in 1924, according to the White House Correspondents’ Association website. Proceeds from the dinner go toward scholarships for aspiring journalists.\n\nDo you have information you want to share with the Huffington Post? Here’s how.\nALSO ON HUFFPOST\nX\n\nSuggest a correction\nSam Levine  \nAssociate Politics Editor, The Huffington Post\nMORE:\n\nDonald Trump U.S. News International News White House White House Correspondents Association\nCONVERSATIONS\n\nTRENDING\n\nDear Evangelicals, I Don’t Think You Realize How You Sound To Everybody Else\nI Went To An Indivisible Meeting. Here’s What I Found.\nBernie Sanders Just Shut Down Trump With A Brutal Reality Check\nMerriam-Webster Trolls Kellyanne Conway With Definition Of ‘Feminism’\nLaw Professors File Ethics Complaint Against Kellyanne Conway Over ‘Lies’\nSUBSCRIBE TO & FOLLOW TRUMP'S FIRST 100 DAYS\nHow will Donald Trump’s first 100 days impact YOU? Subscribe, choose the community that you most identify with or want to learn more about and we’ll send you the news that matters most once a week throughout Trump’s first 100 days in office. Learn more\nNewsletter\n\n\n2.04 M\n1.13 M\n471 K\nPodcast\nAdd us on Snapchat\nDonald Trump Says He Will Not Attend Annual White House Correspondents Dinner\nSUGGESTED FOR YOU\nHunter McGrady Is A Breath Of Fresh Air In SI’s Swimsuit Edition\n‘Get Out Of My Country’: Canadian Politician Reads Her Hate Mail In The House Of Commons\nIvanka Trump Tweeted About Religious Tolerance. It Didn’t Go Down Well.\nHundreds Of Migrants And Refugees Are Sleeping Outdoors In Paris\nObama Is Back From Vacation And Looking\nWHAT’S HOT\nDear White, Christian Trump Supporters: A Follow-Up\nI Came Out As A Lesbian — And Then Fell In Love With A Man\n‘Goodbye, Racist!’: Passengers Cheer As Unruly Man Gets Booted From Plane\n7 Signs Of Tyranny\nSteve Bannon Says Feud With ‘Corporatist, Globalist’ Media Will Only Get Worse\nJake Tapper Nails White House Barring Of Media With 1 Perfect Word\nRules Against Bare Breasts Reinforce Stereotypes About Women, Judge Says\nStephen Colbert Shreds Donald Trump’s ‘Phone Buddy’ Alex Jones\nAdvertise  RSS  Careers  FAQ\nUser Agreement  Privacy  Comment Policy  About Us  About Our Ads  Contact Us  Archive\nCopyright © 2017 TheHuffingtonPost.com, Inc.    'The Huffington Post' is a registered trademark of TheHuffingtonPost.com, Inc. All rights reserved.\nPart of HuffPost • HPMG News\n"
 
 var sentiment = require('sentiment');
+var syllable = require('syllable');
 
 /*
 SCORES holds the information about all politicians in our dataset.
@@ -742,12 +743,6 @@ function Politician(scores_array){
     this.alt_last = scores_array[7];
 };
 
-// var p1 = new Politician(SCORES[100])
-// var p2 = new Politician(SCORES[100])
-// var s = new Set();
-// s.add(p1);
-// s.add(p2);
-// console.log(s);
 
 function get_article(full_text){
     /*
@@ -789,7 +784,6 @@ function get_article(full_text){
     return article_array
 }
 
-//console.log(get_article(example_text));
 
 function get_row_with_name(first, last){
     for (i = 0; i < SCORES.length; i++){
@@ -805,7 +799,6 @@ function get_row_with_name(first, last){
     return []
 }
 
-// console.log(get_row_with_name("Thomas", "Suozzi"))
 
 function find_politicians_in_article(article_array){
     /*
@@ -870,8 +863,6 @@ function is_name_in_string(paragraph_string, name){
     }
 }
 
-// run as an example
-// find_politicians_in_article(get_article(example_text))
 
 function get_sentences(article_array){
     var rv = []
@@ -888,10 +879,6 @@ function get_sentences(article_array){
     }
     return rv;
 }; 
-
-// run as an example
-// console.log(get_sentences(get_article(example_text)));
-
 
 
 function get_sentiments(sentences, politicians){
@@ -917,7 +904,6 @@ function get_sentiments(sentences, politicians){
                 is_name_in_string(sentence, p.alt_last)){
                 var sent_object = sentiment(sentence);
                 var sent_score = sent_object.score;
-                console.log(sent_score, sentence);
                 rv.push([p, sentence, sent_score]);
             }
         }
@@ -925,13 +911,6 @@ function get_sentiments(sentences, politicians){
     
     return rv;
 }
-
-
-// var article = get_article(example_cnn);
-// var names = find_politicians_in_article(article);
-// var sentences = get_sentences(article);
-// var sentiments = get_sentiments(sentences, names)
-// // console.log(sentiments)
 
 
 function calc_bias_score(sentiments){
@@ -972,6 +951,13 @@ function calc_bias_score(sentiments){
             }
         }
     }
+    // Find sentences with strongest sentiment scores
+    // Taken from here: http://stackoverflow.com/questions/16096872/how-to-sort-2-dimensional-array-by-column-value
+    sentiments.sort(function(a,b) {
+        return Math.abs(b[2]) - Math.abs(a[2]);
+    });
+    var top_three = sentiments.slice(0, 3)
+
     // Normalize resulting distribution
     var sum = 0
     for (i = 0; i < num_bins; i++){
@@ -989,117 +975,124 @@ function calc_bias_score(sentiments){
     var upper_q = 0
     for (i = 1; i < num_bins; i++){
         cum_dist.push(cum_dist[i - 1] + bins[i]);
-        if (cum_dist[i] < 0.25){ lower_q = i + 1};
+        // if (cum_dist[i] < 0.25){ lower_q = i + 1};
         if (cum_dist[i] < 0.50){ median = i + 1};
-        if (cum_dist[i] < 0.75){ upper_q = i + 1};
+        // if (cum_dist[i] < 0.75){ upper_q = i + 1};
     }
 
-    return [lower_q, median, upper_q, observations]
+    bias_score = median * 10
+    return [bias_score, observations, top_three]
 }
-// [lower, med, upper, observations] = calc_bias_score(sentiments)
-// console.log(lower, med, upper, observations)
+
 
 
 function isaWord(value){
-	/*
-	Checks whether the word is an actual English word
+    /*
+    Checks whether the word is an actual English word
 
-	Input: 
-		value: (str) word to be evaluated 
+    Input: 
+        value: (str) word to be evaluated 
 
-	Output:
-		Boolean indicating whether the value is a word or not 
-	*/
-	return value.length > 1 && value !=- '';
+    Output:
+        Boolean indicating whether the value is a word or not 
+    */
+    return value.length > 1 && value !=- '';
 };
 
 
 function get_words(sentences){
-	/*
-	Converts the sentences into an array of individual words 
+    /*
+    Converts the sentences into an array of individual words 
 
-	Input:
-		sentences: (array of str) Sentences to extract words from 
+    Input:
+        sentences: (array of str) Sentences to extract words from 
 
-	Output:
-		words: (array of str) array of words from the sentences
-	*/
-	var words = [];		
-		for (var i = 0; i < sentences.length; i++){
-			var split = sentences[i].split(" ");
-			for (var j = 0; j < split.length; j++){
-				words.push(split[j]);
-			};
-	};
+    Output:
+        words: (array of str) array of words from the sentences
+    */
+    var words = [];        
+        for (var i = 0; i < sentences.length; i++){
+            var split = sentences[i].split(" ");
+            for (var j = 0; j < split.length; j++){
+                words.push(split[j]);
+            };
+    };
 
-	//Extra step necessary to make sure the array contains actual words
-	words = words.filter(isaWord);
+    //Extra step necessary to make sure the array contains actual words
+    words = words.filter(isaWord);
 
-	return words;
+    return words;
 };
 
 
 function readability(score){
-	/*
-	Given a score, returns a text message indicative of how difficult it 
-	is to read a certain article 
+    /*
+    Given a score, returns a text message indicative of how difficult it 
+    is to read a certain article 
 
-	Input:
-		score: (float) Flesh-Kincaid Readability score  
+    Input:
+        score: (float) Flesh-Kincaid Readability score  
 
-	Output:
-		text: (str) text letting the user know of the difficulty
-	*/
-	var text = "";
+    Output:
+        text: (str) text letting the user know of the difficulty
+    */
+    var text = "";
 
-	if (score > 90){text = "5th Grade Reading Level";}
-	else if (score <= 90 && score > 80){text = "6th Grade Reading Level";}
-	else if (score <= 80 && score > 70){text = "7th Grade Reading Level";}
-	else if (score <= 70 && score > 60){text = "9th Grade Reading Level";}
-	else if (score <= 60 && score > 50){text = "12th Grade Reading Level";}
-	else if (score <= 50 && score > 30){text = "College Reading Level";}
-	else {text = "College Graduate Reading Level";}
+    if (score > 90){text = "5th Grade Reading Level";}
+    else if (score <= 90 && score > 80){text = "6th Grade Reading Level";}
+    else if (score <= 80 && score > 70){text = "7th Grade Reading Level";}
+    else if (score <= 70 && score > 60){text = "9th Grade Reading Level";}
+    else if (score <= 60 && score > 50){text = "12th Grade Reading Level";}
+    else if (score <= 50 && score > 30){text = "College Reading Level";}
+    else {text = "College Graduate Reading Level";}
 
-	return text;
+    return text;
 };
 
 function Flesh_Kincaid(sentences){
-	/*
-	Given an array of sentences, calculates the Flesh_Kincaid readability
-	score and estimates how hard the given article is to read 
+    /*
+    Given an array of sentences, calculates the Flesh_Kincaid readability
+    score and estimates how hard the given article is to read 
 
-	Input:
-		sentences: (array of str) Sentences from an article
+    Input:
+        sentences: (array of str) Sentences from an article
 
-	Output:
-		Returns an array of length 2 that has the readability score and 
-		text indicating how hard it is to read the given article
-	*/
-	var num_sentences = sentences.length;
-	var words = get_words(sentences);
-	var num_words = words.length;
-	var num_syl = 0;
+    Output:
+        Returns an array of length 2 that has the readability score and 
+        text indicating how hard it is to read the given article
+    */
+    var num_sentences = sentences.length;
+    var words = get_words(sentences);
+    var num_words = words.length;
+    var num_syl = 0;
 
-	for (var i = 0; i < words.length; i++){
-		var word_syl = syllable(words[i]);
-		num_syl += word_syl;
-	};
+    for (var i = 0; i < words.length; i++){
+        var word_syl = syllable(words[i]);
+        num_syl += word_syl;
+    };
 
-	var score = 206.835 - 1.015 * (num_words / num_sentences) - 84.6 * (num_syl / num_words);
-	var text = readability(score);
+    var score = 206.835 - 1.015 * (num_words / num_sentences) - 84.6 * (num_syl / num_words);
+    var text = readability(score);
 
-	return [score, text];
+    return [score, text];
 }; 
 
 
 function go(full_text){
-	var article_array = get_article(full_text);
-	var sentences = get_sentences(article_array);
-	var pols_in_article = find_politicians_in_article(article_array);
-	var feelings = get_sentiments(sentences, pols_in_article);
-	var bias = calc_bias_score(feelings);
-	return bias; // returns [lower_quartile, median, upper_quartile, observations]
+    /*
+    Put it all together: test for political bias and get Flesch-Kincaid score
+    */
+    var article_array = get_article(full_text);
+    var sentences = get_sentences(article_array);
+    var pols_in_article = find_politicians_in_article(article_array);
+    var feelings = get_sentiments(sentences, pols_in_article);
+    var bias_object = calc_bias_score(feelings);
+    // [bias_score, observations, top_three]
+    var fk_object = Flesh_Kincaid(sentences);
+    // [fk_score, text]
+    return [bias_object, fk_object];
 };
 
+// console.log(go(example_huffpo))
 
 
