@@ -3,7 +3,6 @@
 
 // https://code.tutsplus.com/tutorials/developing-google-chrome-extensions--net-33076
 window.addEventListener("load", function() {
-		full_text = document.body.innerText
 		console.log("----------------------------------------Text Sent")
 
     chrome.runtime.sendMessage({
