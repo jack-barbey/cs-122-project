@@ -1,0 +1,62 @@
+body {
+  margin:0px !important;
+
+}
+
+
+#mainPopup {
+    height: 400px;
+    width: 600px;
+    font-family: "American Typewriter"
+}
+
+#top {
+    height: 80px;
+    border: 1px solid black;
+    text-align: center;
+    background-color: rgb(255,119,119);
+    font-weight: 300;
+}
+
+li {
+    display: flex;
+    line-height: 9px;
+    font-size: 25px;
+    text-align: center;
+    padding-left: 95px;
+    font-weight: 300;
+}
+
+#report {
+  float: left;
+  padding: 8px 0px 0px 10px;
+  height: 160px;
+  width: 350px;
+  text-align: center;
+  font-size: 20px;
+  position: relative;
+  border-right: 1px solid black;
+
+}
+
+.score {
+  margin-left: 160px;
+  line-height: 115px;
+  position: absolute;
+
+}
+
+#circle {
+    float: left;
+    width: 150px;
+    height: 150px;
+    -webkit-border-radius: 75px;
+    -moz-border-radius: 75px;
+    border-radius: 575px;
+    background: #879DFF;
+    line-height: 150px;
+    text-align: center;
+    font-size: 50px;
+    font-weight: 300;
+    border: 1px solid black;
+}
