@@ -6,12 +6,12 @@ body {
 
 #mainPopup {
     height: 400px;
-    width: 600px;
+    width: 630px;
     font-family: "American Typewriter"
 }
 
 #top {
-    height: 80px;
+    height: 70px;
     border: 1px solid black;
     text-align: center;
     background-color: rgb(255,119,119);
@@ -20,43 +20,118 @@ body {
 
 li {
     display: flex;
-    line-height: 9px;
+    line-height: 0px;
     font-size: 25px;
     text-align: center;
     padding-left: 95px;
-    font-weight: 300;
+    font-weight: 400;
 }
+
+
 
 #report {
   float: left;
-  padding: 8px 0px 0px 10px;
-  height: 160px;
-  width: 350px;
+  padding: 18px 0px 0px 5px;
+  height: 165px;
+  width: 320px;
   text-align: center;
   font-size: 20px;
   position: relative;
   border-right: 1px solid black;
-
 }
 
-.score {
-  margin-left: 160px;
-  line-height: 115px;
+#report2 {
+  float: left;
+  padding: 0px 0px 0px 5px;
+  height: 165px;
+  width: 320px;
+  text-align: center;
+  font-size: 20px;
+  position: relative;
+  border-right: 1px solid black;
+}
+
+
+.name {
+  float: left;
+  margin-left: 135px;
+  line-height: 88px;
   position: absolute;
-
+  font-size: 19px;
 }
 
-#circle {
+.name2 {
+  float: left;
+  margin-left: 140px;
+  line-height: 88px;
+  position: absolute;
+  font-size: 19px;
+}
+
+.name3 {
+  float: left;
+  margin-left: 140px;
+  line-height: 150px;
+  position: absolute;
+  font-size: 13px;
+  padding: 0px;
+}
+
+
+.circle {
     float: left;
-    width: 150px;
-    height: 150px;
-    -webkit-border-radius: 75px;
-    -moz-border-radius: 75px;
+    width: 126px;
+    height: 126px;
+    -webkit-border-radius: 63px;
+    -moz-border-radius: 63px;
     border-radius: 575px;
     background: #879DFF;
-    line-height: 150px;
+    line-height: 130px;
     text-align: center;
     font-size: 50px;
     font-weight: 300;
     border: 1px solid black;
 }
+
+.circle2 {
+    float: left;
+    width: 126px;
+    height: 126px;
+    -webkit-border-radius: 63px;
+    -moz-border-radius: 63px;
+    border-radius: 575px;
+    background: #879DFF;
+    line-height: 130px;
+    text-align: center;
+    font-size: 50px;
+    font-weight: 300;
+    padding-left: 0px;
+    border: 1px solid black;
+}
+
+#scroll {
+  position: absolute;
+  margin-left: 320px;
+  height: 330px;
+  width: 300px;
+
+}
+
+
+table {
+    background-color: #aaa;
+}
+tbody {
+    background-color: #ddd;
+    height: 330px;
+    overflow: auto;
+    width:300px;
+}
+td {
+    padding: 3px 15px;
+    width:60px;
+    border: 1px solid black;
+}
+
+thead > tr, tbody{
+    display:block;}

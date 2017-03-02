@@ -1890,7 +1890,7 @@ function get_article(full_text){
     Returns array of paragraphs representing the text
     in the actual article, without advertisements or links.
     */
-    var paragraph_array = full_text.split("\\n")
+    var paragraph_array = full_text.split("\n")
     paragraph_array = paragraph_array.filter(Boolean) // removes empty lines
 
     var min_paragraph_length = 125
@@ -2118,7 +2118,7 @@ function calc_bias_score(sentiments){
         // if (cum_dist[i] < 0.75){ upper_q = i + 1};
     }
 
-    bias_score = median * 10
+    bias_score = median * 10 - 100
     return [bias_score, observations, top_five]
 }
 
@@ -2212,7 +2212,7 @@ function Flesh_Kincaid(sentences){
     var score = 206.835 - 1.015 * (num_words / num_sentences) - 84.6 * (num_syl / num_words);
     var text = readability(score);
 
-    return [score, text];
+    return [Math.round(score), text];
 };
 
 

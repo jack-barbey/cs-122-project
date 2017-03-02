@@ -23,6 +23,8 @@ chrome.runtime.onMessage.addListener(
 
 });
 
+
+/*
 chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
   if (message.type == "Handshake") {
     console.log("Popup Queue")
@@ -38,7 +40,7 @@ chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
 
 
 	});
-
+*/
 
 
 // http://stackoverflow.com/questions/8499376/chrome-extension-get-entire-text-content-of-the-current-tab

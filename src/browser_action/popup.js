@@ -1,12 +1,17 @@
-chrome.runtime.sendMessage({type:"Handshake"},function(response){
-			});
+var	bias_score
+var top_five
+var fk_score
+var fk_text
 
-chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
-			var	bias_score =  message.data.bias_score;
-			var top_five = message.data.top_five;
-			var fk_score = math.round(message.data.fk_score);
-			var fk_score2 = "TEXASBREITBART"
-			var fk_text = message.data.fk_text;
+chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+		chrome.tabs.sendMessage(tabs[0].id, {type: "getReports"}, function(data) {
+			bias_score =  data.bias_score;
+			top_five = data.top_five;
+			fk_score = data.fk_score;
+			fk_text = data.fk_text;
 
-			console.log("test")
+			document.getElementById("bias").innerHTML = bias_score;
+			document.getElementById("fk").innerHTML = fk_score;
+			document.getElementById("fk_text").innerHTML = "- ".concat(fk_text);
+		});
 });
