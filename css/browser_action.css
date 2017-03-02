@@ -7,7 +7,7 @@ body {
 #mainPopup {
     height: 400px;
     width: 630px;
-    font-family: "American Typewriter"
+    font-family: "Times New Roman", Times, serif
 }
 
 #top {
@@ -24,7 +24,7 @@ li {
     font-size: 25px;
     text-align: center;
     padding-left: 95px;
-    font-weight: 400;
+    font-weight: 100;
 }
 
 

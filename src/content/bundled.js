@@ -1890,7 +1890,7 @@ function get_article(full_text){
     Returns array of paragraphs representing the text
     in the actual article, without advertisements or links.
     */
-    var paragraph_array = full_text.split("\n")
+    var paragraph_array = full_text.split("\\n")
     paragraph_array = paragraph_array.filter(Boolean) // removes empty lines
 
     var min_paragraph_length = 125
@@ -2182,7 +2182,8 @@ function readability(score){
     else if (score <= 70 && score > 60){text = "9th Grade Reading Level";}
     else if (score <= 60 && score > 50){text = "12th Grade Reading Level";}
     else if (score <= 50 && score > 30){text = "College Reading Level";}
-    else {text = "College Graduate Reading Level";}
+    else if (score <= 30 && score > 0) {text = "Graduate Reading Level";}
+    else {text = "Score Undefined";}
 
     return text;
 };
