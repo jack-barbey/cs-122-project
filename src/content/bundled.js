@@ -2222,12 +2222,16 @@ module.exports = GetBias = function (full_text){
     Put it all together: test for political bias and get Flesch-Kincaid score
     */
     var article_array = get_article(full_text);
+    var full_page_array = full_text.split("\\n");
+    var full_page_sentences = get_sentences(full_page_array);
+
+
     var sentences = get_sentences(article_array);
     var pols_in_article = find_politicians_in_article(article_array);
     var feelings = get_sentiments(sentences, pols_in_article);
     var bias_object = calc_bias_score(feelings);
     // [bias_score, observations, top_five]
-    var fk_object = Flesh_Kincaid(sentences);
+    var fk_object = Flesh_Kincaid(full_page_sentences);
     // [fk_score, text]
     return [bias_object, fk_object];
 };
