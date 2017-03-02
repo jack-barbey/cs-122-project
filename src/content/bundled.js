@@ -2211,6 +2211,15 @@ function Flesh_Kincaid(sentences){
     };
 
     var score = 206.835 - 1.015 * (num_words / num_sentences) - 84.6 * (num_syl / num_words);
+    
+    //Making sure the scores are within the acceptable ranges
+    if (score > 100){
+      score = 100;
+    }
+    else if (score < 0){
+      score = 0;
+    };
+
     var text = readability(score);
 
     return [Math.round(score), text];
