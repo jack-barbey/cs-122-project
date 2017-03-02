@@ -1,4 +1,6 @@
+
 var sentiment = require('sentiment');
+var syllable = require('syllable');
 
 /*
 SCORES holds the information about all politicians in our dataset.
@@ -738,12 +740,6 @@ function Politician(scores_array){
     this.alt_last = scores_array[7];
 };
 
-// var p1 = new Politician(SCORES[100])
-// var p2 = new Politician(SCORES[100])
-// var s = new Set();
-// s.add(p1);
-// s.add(p2);
-// console.log(s);
 
 function get_article(full_text){
     /*
@@ -785,7 +781,6 @@ function get_article(full_text){
     return article_array
 }
 
-//console.log(get_article(example_text));
 
 function get_row_with_name(first, last){
     for (i = 0; i < SCORES.length; i++){
@@ -801,7 +796,6 @@ function get_row_with_name(first, last){
     return []
 }
 
-// console.log(get_row_with_name("Thomas", "Suozzi"))
 
 function find_politicians_in_article(article_array){
     /*
@@ -867,11 +861,6 @@ function is_name_in_string(paragraph_string, name){
 }
 
 
-
-
-// run as an example
-// find_politicians_in_article(get_article(example_text))
-
 function get_sentences(article_array){
     var rv = []
     for (i = 0; i < article_array.length; i++){
@@ -887,10 +876,6 @@ function get_sentences(article_array){
     }
     return rv;
 };
-
-// run as an example
-// console.log(get_sentences(get_article(example_text)));
-
 
 
 function get_sentiments(sentences, politicians){
@@ -916,7 +901,6 @@ function get_sentiments(sentences, politicians){
                 is_name_in_string(sentence, p.alt_last)){
                 var sent_object = sentiment(sentence);
                 var sent_score = sent_object.score;
-                console.log(sent_score, sentence);
                 rv.push([p, sentence, sent_score]);
             }
         }
@@ -924,13 +908,6 @@ function get_sentiments(sentences, politicians){
 
     return rv;
 }
-
-
-// var article = get_article(example_cnn);
-// var names = find_politicians_in_article(article);
-// var sentences = get_sentences(article);
-// var sentiments = get_sentiments(sentences, names)
-// // console.log(sentiments)
 
 
 function calc_bias_score(sentiments){
@@ -971,6 +948,13 @@ function calc_bias_score(sentiments){
             }
         }
     }
+    // Find sentences with strongest sentiment scores
+    // Taken from here: http://stackoverflow.com/questions/16096872/how-to-sort-2-dimensional-array-by-column-value
+    sentiments.sort(function(a,b) {
+        return Math.abs(b[2]) - Math.abs(a[2]);
+    });
+    var top_five = sentiments.slice(0, 5)
+
     // Normalize resulting distribution
     var sum = 0
     for (i = 0; i < num_bins; i++){
@@ -988,24 +972,122 @@ function calc_bias_score(sentiments){
     var upper_q = 0
     for (i = 1; i < num_bins; i++){
         cum_dist.push(cum_dist[i - 1] + bins[i]);
-        if (cum_dist[i] < 0.25){ lower_q = i + 1};
+        // if (cum_dist[i] < 0.25){ lower_q = i + 1};
         if (cum_dist[i] < 0.50){ median = i + 1};
-        if (cum_dist[i] < 0.75){ upper_q = i + 1};
+        // if (cum_dist[i] < 0.75){ upper_q = i + 1};
     }
 
-    return [lower_q, median, upper_q, observations]
+    bias_score = median * 10
+    return [bias_score, observations, top_five]
 }
-// [lower, med, upper, observations] = calc_bias_score(sentiments)
-// console.log(lower, med, upper, observations)
 
 
 
-module.exports = GetBias = function(x) {
-      console.log("I got called")
-    	var article_array = get_article(x);
-    	var sentences = get_sentences(article_array);
-    	var pols_in_article = find_politicians_in_article(article_array);
-    	var feelings = get_sentiments(sentences, pols_in_article);
-    	var bias = calc_bias_score(feelings);
-    	return bias; // returns [lower_quartile, median, upper_quartile, observations]
-  };
+function isaWord(value){
+    /*
+    Checks whether the word is an actual English word
+
+    Input:
+        value: (str) word to be evaluated
+
+    Output:
+        Boolean indicating whether the value is a word or not
+    */
+    return value.length > 1 && value !=- '';
+};
+
+
+function get_words(sentences){
+    /*
+    Converts the sentences into an array of individual words
+
+    Input:
+        sentences: (array of str) Sentences to extract words from
+
+    Output:
+        words: (array of str) array of words from the sentences
+    */
+    var words = [];
+        for (var i = 0; i < sentences.length; i++){
+            var split = sentences[i].split(" ");
+            for (var j = 0; j < split.length; j++){
+                words.push(split[j]);
+            };
+    };
+
+    //Extra step necessary to make sure the array contains actual words
+    words = words.filter(isaWord);
+
+    return words;
+};
+
+
+function readability(score){
+    /*
+    Given a score, returns a text message indicative of how difficult it
+    is to read a certain article
+
+    Input:
+        score: (float) Flesh-Kincaid Readability score
+
+    Output:
+        text: (str) text letting the user know of the difficulty
+    */
+    var text = "";
+
+    if (score > 90){text = "5th Grade Reading Level";}
+    else if (score <= 90 && score > 80){text = "6th Grade Reading Level";}
+    else if (score <= 80 && score > 70){text = "7th Grade Reading Level";}
+    else if (score <= 70 && score > 60){text = "9th Grade Reading Level";}
+    else if (score <= 60 && score > 50){text = "12th Grade Reading Level";}
+    else if (score <= 50 && score > 30){text = "College Reading Level";}
+    else {text = "College Graduate Reading Level";}
+
+    return text;
+};
+
+function Flesh_Kincaid(sentences){
+    /*
+    Given an array of sentences, calculates the Flesh_Kincaid readability
+    score and estimates how hard the given article is to read
+
+    Input:
+        sentences: (array of str) Sentences from an article
+
+    Output:
+        Returns an array of length 2 that has the readability score and
+        text indicating how hard it is to read the given article
+    */
+    var num_sentences = sentences.length;
+    var words = get_words(sentences);
+    var num_words = words.length;
+    var num_syl = 0;
+
+    for (var i = 0; i < words.length; i++){
+        var word_syl = syllable(words[i]);
+        num_syl += word_syl;
+    };
+
+    var score = 206.835 - 1.015 * (num_words / num_sentences) - 84.6 * (num_syl / num_words);
+    var text = readability(score);
+
+    return [score, text];
+};
+
+
+module.exports = GetBias = function (full_text){
+    /*
+    Put it all together: test for political bias and get Flesch-Kincaid score
+    */
+    var article_array = get_article(full_text);
+    var sentences = get_sentences(article_array);
+    var pols_in_article = find_politicians_in_article(article_array);
+    var feelings = get_sentiments(sentences, pols_in_article);
+    var bias_object = calc_bias_score(feelings);
+    // [bias_score, observations, top_five]
+    var fk_object = Flesh_Kincaid(sentences);
+    // [fk_score, text]
+    return [bias_object, fk_object];
+};
+
+// console.log(go(example_huffpo))
