@@ -9,6 +9,23 @@ chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 			document.getElementById("bias").innerHTML = bias_score;
 			document.getElementById("fk").innerHTML = fk_score;
 			document.getElementById("fk_text").innerHTML = "- ".concat(fk_text);
+
+			var fk_circle = document.getElementById("fk");
+			if (fk_score >= 70){fk_circle.style.backgroundColor = "#09DC4F"}
+			else if (fk_score >= 50 && fk_score < 70){fk_circle.style.backgroundColor = "#FEF600"}
+			else {fk_circle.style.backgroundColor = "red"};
+
+			var bias_circle = document.getElementById("bias");
+			if (bias_score == 0){bias_circle.style.backgroundColor = 'white';}
+			else if (bias_score < 0 && bias_score >= -10) {bias_circle.style.backgroundColor = '#B5B5FE';}
+			else if (bias_score < -10 && bias_score >= -20) {bias_circle.style.backgroundColor = '#7070FE';}
+			else if (bias_score < -20 && bias_score >= -30){bias_circle.style.backgroundColor = '#2A00FE';}
+			else if (bias_score < -30){bias_circle.style.backgroundColor = '#2A00FE';}
+			else if (bias_score > 0 && bias_score <= 10){bias_circle.style.backgroundColor = '#FAB5B5';}
+			else if (bias_score > 10 && bias_score <= 20){bias_circle.style.backgroundColor = '#FB7171';}
+			else if (bias_score > 20 && bias_score <= 30){bias_circle.style.backgroundColor = '#FE4141';}
+			else {bias_circle.style.backgroundColor = "#FE0000";};
+
 		});
 });
 	
