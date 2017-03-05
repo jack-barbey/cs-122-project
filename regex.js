@@ -734,6 +734,8 @@ var SCORES = [
 ['Cabinet', 'US', 'R', 'Scott', 'Pruitt', '0.555', '', ''],
 ['Cabinet', 'US', 'R', 'Linda', 'McMahon', '0.555', '', ''],
 ['Cabinet', 'US', 'R', 'Andrew', 'Puzder', '0.555', 'Andy', ''],
+['Cabinet', 'US', 'R', 'Sean', 'Spicer', '0.555', '', ''],
+['Cabinet', 'US', 'R', 'Michael', 'Flynn', '0.555', 'Mike', 'T. Flynn'],
 ['Senate', 'AK', 'R', 'Dan', 'Sullivan', '0.71', '', ''],
 ['Senate', 'CA', 'D', 'Kamala', 'Harris', '-0.399', '', ''],
 ['Senate', 'GA', 'R', 'David', 'Perdue', '0.709', '', ''],
