@@ -8,7 +8,7 @@ chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 
 			document.getElementById("bias").innerHTML = bias_score;
 			document.getElementById("fk").innerHTML = fk_score;
-			document.getElementById("fk_text").innerHTML = "- ".concat(fk_text);
+			document.getElementById("fk_text").innerHTML = "- " + fk_text;
 
 			//Changing the color of the fk circle depending on the score
 			var fk_circle = document.getElementById("fk");
