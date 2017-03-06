@@ -1941,7 +1941,7 @@ function get_article(full_text){
     };
     var article_array = paragraph_array.slice(first_full_line, last_line + 1);
     return article_array;
-}
+};
 
 
 function get_row_with_name(first, last){
@@ -1954,7 +1954,7 @@ function get_row_with_name(first, last){
         };
     };
     return [] // if politician not in article
-}
+};
 
 
 function find_politicians_in_article(article_array){
@@ -2006,7 +2006,7 @@ function find_politicians_in_article(article_array){
         };
     };
     return politicians_in_article;
-}
+};
 
 
 function is_name_in_string(paragraph_string, name){
@@ -2017,7 +2017,7 @@ function is_name_in_string(paragraph_string, name){
         var is_in_string = pattern.test(paragraph_string);
         return is_in_string;
     };
-}
+};
 
 
 function get_sentences(article_array){
@@ -2034,7 +2034,7 @@ function get_sentences(article_array){
         };
     };
     return rv;
-}
+};
 
 
 function get_sentiments(sentences, politicians){
@@ -2068,7 +2068,7 @@ function get_sentiments(sentences, politicians){
     };
 
     return rv;
-}
+};
 
 
 function calc_bias_score(sentiments){
@@ -2135,7 +2135,7 @@ function calc_bias_score(sentiments){
     bias_score = 200 * (median / num_bins) - 100; // range of -100 to 100
     bias_score = Math.round(bias_score);
     return [bias_score, observations, display_sentences];
-}
+};
 
 
 
@@ -2255,8 +2255,6 @@ module.exports = GetBias = function (full_text){
     // [fk_score, text]
     return [bias_object, fk_object];
 };
-
-// console.log(go(example_huffpo))
 
 },{"sentiment":8,"syllable":10}],13:[function(require,module,exports){
 // shim for using process in browser
