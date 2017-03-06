@@ -25,6 +25,27 @@ chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 			else if (bias_score > 0 && bias_score <= 10){bias_circle.style.backgroundColor = '#FEB6B6';}
 			else if (bias_score > 10 && bias_score <= 20){bias_circle.style.backgroundColor = '#F67373';}
 			else {bias_circle.style.backgroundColor = "#FE3636";};
+
+			//Grab the table
+			var table = document.getElementById("Bias_Info");
+
+			for (var k = 0; k < top_five.length; k ++){
+				var row = table.insertRow(k + 1);
+
+				var cell_1 = row.insertCell(0);
+				var cell_2 = row.insertCell(1);
+
+				cell_1.innerHTML = top_five[k][2];
+				cell_2.innerHTML = top_five[k][1];		
+			};
+
+
+
+
 		});
+
+		
+
+
 });
 	
