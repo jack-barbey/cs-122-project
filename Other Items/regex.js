@@ -754,8 +754,6 @@ function Politician(scores_array){
     A class for storing the information of a single politician.
     Using a row from the SCORES array of arrays, it creates an object
     storing the same information in a more convenient way.
-
-    Edit this comment later to clarify!
     */
     this.role = scores_array[0];
     this.state = scores_array[1];
@@ -776,36 +774,35 @@ function get_article(full_text){
     Returns array of paragraphs representing the text
     in the actual article, without advertisements or links.
     */
-    var paragraph_array = full_text.split("\n")
-    paragraph_array = paragraph_array.filter(Boolean) // removes empty lines
+    var paragraph_array = full_text.split("\\n");
+    paragraph_array = paragraph_array.filter(Boolean); // removes empty lines
 
-    var min_paragraph_length = 125
-    var max_consec_short_lines = 3
-    var first_full_line = -1
-    var last_line = -1
+    var min_paragraph_length = 125;
+    var max_consec_short_lines = 3;
+    var first_full_line = -1;
+    var last_line = -1;
     for (i = 0; i < paragraph_array.length; i++){
         if (paragraph_array[i].length > min_paragraph_length){
             if (first_full_line == -1){
-                first_full_line = i
-                var consec_short_lines = 0 // start counter of non-article lines at 0
+                first_full_line = i;
+                var consec_short_lines = 0; // start counter of non-article lines at 0
             } else {
-                consec_short_lines = 0 // reset counter if necessary
-            }
+                consec_short_lines = 0; // reset counter if necessary
+            };
         } else if (first_full_line != -1){
-            consec_short_lines += 1
+            consec_short_lines += 1;
             if (consec_short_lines == max_consec_short_lines){
-                last_line = i - max_consec_short_lines
-            }
-        }
-    }
+                last_line = i - max_consec_short_lines;
+            };
+        };
+    };
     if (first_full_line == -1){
-        return []
+        return [];
     } else if (last_line == -1){
-        last_line = paragraph_array.length - 1
-    }
-    var article_array = paragraph_array.slice(first_full_line, last_line + 1)
-    //console.log(article_array)
-    return article_array
+        last_line = paragraph_array.length - 1;
+    };
+    var article_array = paragraph_array.slice(first_full_line, last_line + 1);
+    return article_array;
 }
 
 
@@ -815,12 +812,10 @@ function get_row_with_name(first, last){
         if (row[3] == first || row[6] == first){
             if (row[4] == last || row[7] == last){
                 return row;
-            }
-        }
-    }
-    // Reaches here only on error
-    console.log("Error: Couldn't find politician " + first + " " + last)
-    return []
+            };
+        };
+    };
+    return [] // if politician not in article
 }
 
 
@@ -832,7 +827,6 @@ function find_politicians_in_article(article_array){
     mentioned in the article.
     */
     politicians_in_article = [];
-
     var politicians_seen = new Set();
 
     // Iterate over all recognized politicians
@@ -846,13 +840,13 @@ function find_politicians_in_article(article_array){
         var combos = [[first, last]];
         if (alt_last){
             combos.push([first, alt_last]);
-        }
+        };
         if (alt_first){
             combos.push([alt_first, last]);
             if (alt_last){
                 combos.push([alt_first, alt_last]);
-            }
-        }
+            };
+        };
 
         // Iterate over all paragraphs in article
         for (j = 0; j < article_array.length; j++){
@@ -868,11 +862,11 @@ function find_politicians_in_article(article_array){
                         var row = get_row_with_name(f, l);
                         var pol = new Politician(row);
                         politicians_in_article.push(pol);
-                    }
-                }
-            }
-        }
-    }
+                    };
+                };
+            };
+        };
+    };
     return politicians_in_article;
 }
 
@@ -884,25 +878,25 @@ function is_name_in_string(paragraph_string, name){
         var pattern = new RegExp(name);
         var is_in_string = pattern.test(paragraph_string);
         return is_in_string;
-    }
+    };
 }
 
 
 function get_sentences(article_array){
-    var rv = []
+    var rv = [];
     for (i = 0; i < article_array.length; i++){
         var sentences_array = article_array[i].match(/[^\.!\?]+[\.!\?]+/g);
         if (sentences_array == null){
             // No ., !, or ? in paragraph
             sentences_array = [article_array[i]];
-        }
+        };
         for (j = 0; j < sentences_array.length; j++){
             rv.push(sentences_array[j]);
         // }
-        }
-    }
+        };
+    };
     return rv;
-};
+}
 
 
 function get_sentiments(sentences, politicians){
@@ -919,7 +913,7 @@ function get_sentiments(sentences, politicians){
         Sentence mentioning the politician,
         Sentiment score for that sentence
     */
-    rv = []
+    rv = [];
     for (i = 0; i < sentences.length; i++){
         sentence = sentences[i];
         for (j = 0; j < politicians.length; j++){
@@ -929,9 +923,9 @@ function get_sentiments(sentences, politicians){
                 var sent_object = sentiment(sentence);
                 var sent_score = sent_object.score;
                 rv.push([p, sentence, sent_score]);
-            }
-        }
-    }
+            };
+        };
+    };
 
     return rv;
 }
@@ -951,6 +945,7 @@ function calc_bias_score(sentiments){
     var observations = sentiments.length;
     var num_bins = 200;
     var bins = [];
+    var num_display_sentences = 0;
     for (i = 0; i < num_bins; i++){
         bins.push(1 / num_bins); // prior is uniform distribution
     };
@@ -960,6 +955,7 @@ function calc_bias_score(sentiments){
         politician = sentiments[i][0];
         sentence = sentiments[i][1];
         sent = sentiments[i][2];
+        if (sent != 0){num_display_sentences += 1};
         sent_factor = sent / 10;
 
         ideology = politician.score; // scale of -1 (liberal) to 1
@@ -972,12 +968,12 @@ function calc_bias_score(sentiments){
             };
         };
     };
-    // Find sentences with strongest sentiment scores
+    // Display sentences with nonzero sentiment scores
     // Taken from here: http://stackoverflow.com/questions/16096872/how-to-sort-2-dimensional-array-by-column-value
-    sentiments.sort(function(a, b) {
+    sentiments.sort(function(a, b){
         return Math.abs(b[2]) - Math.abs(a[2]);
     });
-    var top_five = sentiments.slice(0, 5);
+    var display_sentences = sentiments.slice(0, num_display_sentences);
 
     // Normalize resulting distribution
     var sum = 0;
@@ -998,7 +994,7 @@ function calc_bias_score(sentiments){
 
     bias_score = 200 * (median / num_bins) - 100; // range of -100 to 100
     bias_score = Math.round(bias_score);
-    return [bias_score, observations, top_five];
+    return [bias_score, observations, display_sentences];
 }
 
 
