@@ -922,6 +922,8 @@ function get_sentiments(sentences, politicians){
                 is_name_in_string(sentence, p.alt_last)){
                 var sent_object = sentiment(sentence);
                 var sent_score = sent_object.score;
+                if (sent_score > 10){sent_score = 10};
+                if (sent_score < -10){sent_score = -10};
                 rv.push([p, sentence, sent_score]);
             };
         };
