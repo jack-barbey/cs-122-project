@@ -109,7 +109,7 @@ li {
     font-size: 50px;
     font-weight: 300;
     padding-left: 0px;
-    border: 1px solid red;
+    border: 1px solid black;
 }
 
 #scroll {
@@ -130,15 +130,13 @@ tbody {
     width:320px;
 }
 
-.header{
-  font-weight: bold;
-}
 
 td:first-child {
   padding: 10px;
   text-align: center;
   width: 30px;
-  border: 1.5px dotted blue;
+  border: 1px dotted;
+  border-color: DimGrey;
   font-weight: bold;
   font-family: Times, sans-serif;
 }
@@ -147,6 +145,23 @@ td:nth-child(2){
   padding: 2px;
   width: 240px;
   text-align: center;
-  border: 1.5px dotted red;
+  border: 1px dotted;
+  border-color: DimGrey;
   font-family: 'cursive', Times, sans-serif;
+}
+
+#tab_header {
+  font-weight: bold;
+}
+
+#neutral {
+  border-color: grey;
+}
+
+#conserv {
+  border-color: red;
+}
+
+#liberal {
+  border-color: blue;
 }

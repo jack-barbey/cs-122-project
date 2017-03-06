@@ -8,7 +8,7 @@ chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 
 			document.getElementById("bias").innerHTML = bias_score;
 			document.getElementById("fk").innerHTML = fk_score;
-			document.getElementById("fk_text").innerHTML = "- ".concat(fk_text);
+			document.getElementById("fk_text").innerHTML = "- " + fk_text;
 
 			//Changing the color of the fk circle depending on the score
 			var fk_circle = document.getElementById("fk");
@@ -30,13 +30,33 @@ chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 			var table = document.getElementById("Bias_Info");
 
 			for (var k = 0; k < top_five.length; k ++){
+				politician = top_five[k][0]
+				console.log(politician)
+				dw_nom = politician.score
+				pol_name = politician.last
+				sentence_score = top_five[k][2]
+				sentence = top_five[k][1]
+
 				var row = table.insertRow(k + 1);
 
 				var cell_1 = row.insertCell(0);
 				var cell_2 = row.insertCell(1);
+				row.id= "newid";
 
-				cell_1.innerHTML = top_five[k][2];
-				cell_2.innerHTML = top_five[k][1];		
+				// No sentiment
+				if (sentence_score == 0) {cell1.id = "neutral"; cell_2.id = "neutral";}
+				// Conservative, positive sentiment
+				else if (dw_nom > 0 && sentence_score > 0) {cell_1.id = "conserv"; cell_2.id = "conserv";}
+				// Conservative, neg sentiment
+				else if (dw_nom > 0 && sentence_score < 0) {cell_1.id = "liberal"; cell_2.id = "liberal";}
+				// Liberal, pos sentiment
+				else if (dw_nom < 0 && sentence_score > 0) {cell_1.id = "liberal"; cell_2.id = "liberal";}
+				// Liberal, neg sentiment
+				else if (dw_nom < 0 && sentence_score < 0) {cell_1.id = "conserv"; cell_2.id = "conserv";}
+
+
+				cell_1.innerHTML = sentence_score;
+				cell_2.innerHTML = sentence;
 			};
 
 
@@ -44,8 +64,7 @@ chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 
 		});
 
-		
+
 
 
 });
-	
