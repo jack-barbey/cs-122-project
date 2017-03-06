@@ -37,14 +37,17 @@ chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 				sentence_score = top_five[k][2]
 				sentence = top_five[k][1]
 
-				var row = table.insertRow(k + 1);
+				// Bolds the name of the politician in question
+				sentence = sentence.replace(new RegExp('(\\b)(' + pol_name + ')(\\b)','ig'), '$1<b>$2</b>$3');
 
+
+				var row = table.insertRow(k + 1);
 				var cell_1 = row.insertCell(0);
 				var cell_2 = row.insertCell(1);
 				row.id= "newid";
 
 				// No sentiment
-				if (sentence_score == 0) {cell1.id = "neutral"; cell_2.id = "neutral";}
+				if (sentence_score == 0) {cell_1.id = "neutral"; cell_2.id = "neutral";}
 				// Conservative, positive sentiment
 				else if (dw_nom > 0 && sentence_score > 0) {cell_1.id = "conserv"; cell_2.id = "conserv";}
 				// Conservative, neg sentiment
@@ -59,12 +62,6 @@ chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 				cell_2.innerHTML = sentence;
 			};
 
-
-
-
 		});
-
-
-
 
 });
