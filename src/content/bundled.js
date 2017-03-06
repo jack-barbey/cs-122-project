@@ -2086,12 +2086,12 @@ function calc_bias_score(sentiments){
 
     Returns a bias score, along with various other statistics
     */
-    var observations = sentiments.length
+    var observations = sentiments.length;
     var num_bins = 200;
     var bins = [];
     for (i = 0; i < num_bins; i++){
         bins.push(1 / num_bins); // prior is uniform distribution
-    }
+    };
 
     var span = 40 + 1; // adjust all bins within (span - 1) of the closest bin
     for (i = 0; i < sentiments.length; i++){
@@ -2107,44 +2107,36 @@ function calc_bias_score(sentiments){
             if (j >= 0 && j < num_bins){
                 dist_factor = 1 - Math.abs(j - closest_bin) / span;
                 bins[j] += bins[j] * sent_factor * dist_factor;
-                // Note: bins[j] will decrease if sent_factor < 0
-                // IS THIS FORMULA TOO AGGRESSIVE?
-                // Especially with positive emotions...maybe that's good though
-            }
-        }
-    }
+            };
+        };
+    };
     // Find sentences with strongest sentiment scores
     // Taken from here: http://stackoverflow.com/questions/16096872/how-to-sort-2-dimensional-array-by-column-value
-    sentiments.sort(function(a,b) {
+    sentiments.sort(function(a, b) {
         return Math.abs(b[2]) - Math.abs(a[2]);
     });
-    var top_five = sentiments.slice(0, 5)
+    var top_five = sentiments.slice(0, 5);
 
     // Normalize resulting distribution
-    var sum = 0
+    var sum = 0;
     for (i = 0; i < num_bins; i++){
         sum += bins[i];
-    }
+    };
     for (i = 0; i < num_bins; i++){
         bins[i] = bins[i] / sum;
-    }
+    };
 
-    // Get cumulative distribution and the median,
-    // lower quartile, and upper quartile in terms of bin #
-    var cum_dist = [bins[0]]
-    // var lower_q = 0
-    var median = 0
-    // var upper_q = 0
+    // Get cumulative distribution and the median in terms of bin #
+    var cum_dist = [bins[0]];
+    var median = 0;
     for (i = 1; i < num_bins; i++){
         cum_dist.push(cum_dist[i - 1] + bins[i]);
-        // if (cum_dist[i] < 0.25){ lower_q = i + 1};
-        if (cum_dist[i] < 0.50){ median = i + 1};
-        // if (cum_dist[i] < 0.75){ upper_q = i + 1};
-    }
+        if (cum_dist[i] <= 0.50){ median = i + 2};
+    };
 
-    bias_score = 200 * (median / num_bins) - 100 // range of -100 to 100
-    bias_score = Math.round(bias_score)
-    return [bias_score, observations, top_five]
+    bias_score = 200 * (median / num_bins) - 100; // range of -100 to 100
+    bias_score = Math.round(bias_score);
+    return [bias_score, observations, top_five];
 }
 
 
