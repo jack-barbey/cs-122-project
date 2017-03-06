@@ -12,11 +12,6 @@
           },
   "default_locale": "en",
 
-  "background": {
-    "page": "src/bg/background.html",
-    "persistent": true
-                },
-
   "devtools_page": "src/devtools/devtools.js",
 
   "browser_action": {
