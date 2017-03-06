@@ -2087,13 +2087,13 @@ function calc_bias_score(sentiments){
     Returns a bias score, along with various other statistics
     */
     var observations = sentiments.length
-    var num_bins = 20;
+    var num_bins = 200;
     var bins = [];
     for (i = 0; i < num_bins; i++){
         bins.push(1 / num_bins); // prior is uniform distribution
     }
 
-    var span = 4; // adjust all bins within (span - 1) of the closest bin
+    var span = 30 + 1; // adjust all bins within (span - 1) of the closest bin
     for (i = 0; i < sentiments.length; i++){
         politician = sentiments[i][0];
         sentence = sentiments[i][1];
@@ -2132,9 +2132,9 @@ function calc_bias_score(sentiments){
     // Get cumulative distribution and the median,
     // lower quartile, and upper quartile in terms of bin #
     var cum_dist = [bins[0]]
-    var lower_q = 0
+    // var lower_q = 0
     var median = 0
-    var upper_q = 0
+    // var upper_q = 0
     for (i = 1; i < num_bins; i++){
         cum_dist.push(cum_dist[i - 1] + bins[i]);
         // if (cum_dist[i] < 0.25){ lower_q = i + 1};
@@ -2142,7 +2142,8 @@ function calc_bias_score(sentiments){
         // if (cum_dist[i] < 0.75){ upper_q = i + 1};
     }
 
-    bias_score = median * 10 - 100
+    bias_score = 200 * (median / num_bins) - 100 // range of -100 to 100
+    bias_score = Math.round(bias_score)
     return [bias_score, observations, top_five]
 }
 
