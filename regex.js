@@ -455,7 +455,7 @@ var SCORES = [
 ['House', 'WV', 'R', 'Shelley Moore', 'Capito', '0.268', 'Shelley', ''],
 ['House', 'WV', 'D', 'Nick', 'Rahall', '-0.292', '', ''],
 ['House', 'WY', 'R', 'Cynthia', 'Lummis', '0.703', '', ''],
-['President', 'US', 'D', 'Barack', 'Obama', '-0.368', 'Barack Hussein', ''],
+['President', 'US', 'D', 'Barack', 'Obama', '-0.368', 'President', 'Hussein Obama'],
 ['Cabinet', 'US', 'D', 'Joe', 'Biden', '-0.259', 'Joseph', 'R. Biden'],
 ['Cabinet', 'US', 'D', 'Hillary', 'Clinton', '-0.403', 'Hillary Rodham', ''],
 ['Senate', 'AK', 'R', 'Lisa', 'Murkowski', '0.192', '', ''],
@@ -955,7 +955,7 @@ function calc_bias_score(sentiments){
         bins.push(1 / num_bins); // prior is uniform distribution
     }
 
-    var span = 30 + 1; // adjust all bins within (span - 1) of the closest bin
+    var span = 40 + 1; // adjust all bins within (span - 1) of the closest bin
     for (i = 0; i < sentiments.length; i++){
         politician = sentiments[i][0];
         sentence = sentiments[i][1];
@@ -1103,7 +1103,7 @@ function Flesh_Kincaid(sentences){
 };
 
 
-function go(example3){
+function go(full_text){
     /*
     Put it all together: test for political bias and get Flesch-Kincaid score
     */
