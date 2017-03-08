@@ -120,7 +120,6 @@ li {
   width: 300px;
   background-color: 'white';
   overflow-y: scroll;
-
 }
 
 tbody {
@@ -129,7 +128,6 @@ tbody {
     overflow: scroll;
     width:320px;
 }
-
 
 td:first-child {
   padding: 10px;
