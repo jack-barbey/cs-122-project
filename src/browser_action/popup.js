@@ -39,7 +39,7 @@ chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 				sentence = top_five[k][1];
 
 				// Bolds the name of the politician in question
-				sentence = sentence.replace(new RegExp('(\\b)(' + pol_name + ')(\\b)','ig'), '$1<b>$2</b>$3');
+				sentence = sentence.replace(new RegExp('(\\b)(' + pol_name + ')(\\w*)','ig'), '$1<b>$2$3</b>');
 
 				var row = table.insertRow(k + 1);
 				var cell_1 = row.insertCell(0);

@@ -10,11 +10,11 @@ var fk_text = fk_obj[1];
 
 var bias_score = bias_obj[0];
 var observations = bias_obj[1];
-var top_five = bias_obj[2];
+var display_sentences = bias_obj[2];
 
-var leng = top_five.length;
+var leng = display_sentences.length;
 for (var i = 0; i < leng; i++) {
-  console.log(top_five[i][2], top_five[i][1])
+  console.log(display_sentences[i][2], display_sentences[i][1])
 };
 
 console.log(bias_score);
@@ -23,7 +23,7 @@ console.log(fk_text);
 
 
 var data = {bias_score: bias_score,
-			top_five: top_five,
+			display_sentences: display_sentences,
 			fk_score: fk_score,
 			fk_text: fk_text
 };
