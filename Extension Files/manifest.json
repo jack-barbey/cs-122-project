@@ -1,0 +1,41 @@
+{
+  "manifest_version": 2,
+  "name": "What's My Bias",
+  "version": "1.0",
+
+  "description": "Estimates a page's political bias using sentiment analysis",
+
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+          },
+  "default_locale": "en",
+
+  "devtools_page": "src/devtools/devtools.js",
+
+  "browser_action": {
+    "default_icon": { "16": "icons/icon16.png",
+                      "48": "icons/icon48.png",
+                      "128": "icons/icon128.png" },
+
+    "default_title": "Visualizer",
+    "default_popup": "src/browser_action/browser_action.html"
+  },
+
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js":  ["src/content/bundled.js",
+              "src/content/content.js"
+              ]
+
+    }
+  ]
+
+}

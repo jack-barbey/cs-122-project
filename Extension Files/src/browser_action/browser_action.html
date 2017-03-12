@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+
+<div id="mainPopup">
+
+
+<!-- 4 sections: the header, the partisanship score reporter, the readability
+	 reporter, and the scroll table of sentences -->
+	<section id="top">
+		<ul>
+    	<li>
+        <p>Political Sidedness Analyzer</p>
+    	</li>
+		</ul>
+	</section>
+
+	<section id="partisan_score">
+		<p class="name">Partisanship Score</p>
+		<section class="bias_circle" id="bias"></section>
+	</section>
+
+	<section id="read_score">
+		<p class="name2">Readability Score</p>
+		<p class="name3" id="fk_text"></p>
+		<section class="fk_circle" id="fk"></section>
+	</section>
+
+	<section id="scroll">
+		<table id="Bias_Info">
+    	<thead >
+        <tr>
+            <td id="tab_header">Score</td>
+            <td id="tab_header">Sentence Analyzed</td>
+        </tr>
+    	</thead>
+    	<tbody>
+    	</tbody>
+		</table>
+	</section>
+
+
+	<script type="text/javascript" src="popup.js"></script>
+	<link rel="stylesheet" type = "text/css" href = "../../css/browser_action.css">
+
+</div>
+
+</html>
