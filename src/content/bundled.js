@@ -2269,7 +2269,7 @@ module.exports = GetBias = function(full_text){
     var full_page_sentences = get_sentences(full_page_array);
     var sentences = get_sentences(article_array);
 
-    var data_in_article = find_politicians_in_article(article_array);
+    var data_in_article = find_politicians_in_article(sentences);
     var pols_in_article = data_in_article[0];
     var critical_sentences = data_in_article[1];
     var feelings = get_sentiments(critical_sentences, pols_in_article);
