@@ -2,7 +2,7 @@
 chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 		chrome.tabs.sendMessage(tabs[0].id, {type: "getReports"}, function(data) {
 			var bias_score =  data.bias_score;
-			var top_five = data.top_five;
+			var top_five = data.display_sentences;
 			var fk_score = data.fk_score;
 			var fk_text = data.fk_text;
 
@@ -45,6 +45,10 @@ chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 				var cell_1 = row.insertCell(0);
 				var cell_2 = row.insertCell(1);
 				
+				// Enter the data (sentiment score and sentence analyzed)
+				cell_1.innerHTML = sentence_score;
+				cell_2.innerHTML = sentence;
+
 				// Assigning a new id to the row tag
 				row.id = "newid";
 
@@ -58,11 +62,11 @@ chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 				else if (dw_nom < 0 && sentence_score > 0) {cell_1.id = "liberal"; cell_2.id = "liberal";}
 				// Liberal, neg sentiment
 				else if (dw_nom < 0 && sentence_score < 0) {cell_1.id = "conserv"; cell_2.id = "conserv";};
-
-				cell_1.innerHTML = sentence_score;
-				cell_2.innerHTML = sentence;
+				
 			};
 
 		});
 
 });
+
+

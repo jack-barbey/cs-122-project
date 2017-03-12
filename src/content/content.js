@@ -15,7 +15,7 @@ var display_sentences = bias_obj[2];
 var leng = display_sentences.length;
 for (var i = 0; i < leng; i++) {
   console.log(display_sentences[i][2], display_sentences[i][1])
-};
+}
 
 console.log(bias_score);
 console.log(fk_score);

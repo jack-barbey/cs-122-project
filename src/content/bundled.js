@@ -1140,9 +1140,6 @@ module.exports={
 
 },{}],12:[function(require,module,exports){
 
-var sentiment = require('sentiment');
-var syllable = require('syllable');
-
 /*
 SCORES holds the information about all politicians in our dataset.
 Unfortunately, it must be defined above the functions in which it is used.
@@ -1886,6 +1883,10 @@ var SCORES = [
 ['Senate', 'SD', 'R', 'Mike', 'Rounds', '0.627', '', ''],
 ]
 
+// Functions Necessary to run/operate the extension found below
+
+var sentiment = require('sentiment');
+var syllable = require('syllable');
 
 function Politician(scores_array){
     /*
@@ -1909,38 +1910,46 @@ function get_article(full_text){
     Takes text from webpage found using .all_text() method.
     Newlines must be replaced with literal "\n" first.
 
-    Returns array of paragraphs representing the text
-    in the actual article, without advertisements or links.
+    Returns an array of paragraphs representing the text
+    in the actual article, without advertisements or links, 
+    and an array of paragraphs that represent the full text.
     */
     var paragraph_array = full_text.split("\\n");
-    paragraph_array = paragraph_array.filter(Boolean); // removes empty lines
+    
+    // Remove empty lines 
+    paragraph_array = paragraph_array.filter(Boolean);
 
     var min_paragraph_length = 125;
     var max_consec_short_lines = 3;
     var first_full_line = -1;
     var last_line = -1;
+    
     for (i = 0; i < paragraph_array.length; i++){
         if (paragraph_array[i].length > min_paragraph_length){
             if (first_full_line == -1){
                 first_full_line = i;
                 var consec_short_lines = 0; // start counter of non-article lines at 0
-            } else {
-                consec_short_lines = 0; // reset counter if necessary
+            } 
+            else {consec_short_lines = 0; // reset counter if necessary
             };
-        } else if (first_full_line != -1){
+        } 
+        else if (first_full_line != -1){
             consec_short_lines += 1;
             if (consec_short_lines == max_consec_short_lines){
                 last_line = i - max_consec_short_lines;
             };
         };
     };
+
     if (first_full_line == -1){
         return [];
-    } else if (last_line == -1){
+    } 
+    else if (last_line == -1){
         last_line = paragraph_array.length - 1;
     };
+
     var article_array = paragraph_array.slice(first_full_line, last_line + 1);
-    return article_array;
+    return [article_array, paragraph_array];
 };
 
 
@@ -1962,10 +1971,13 @@ function find_politicians_in_article(article_array){
     Takes an array of paragraphs in an article.
 
     Returns an array of Politician objects, one for each politician
-    mentioned in the article.
+    mentioned in the article, and an array of sentences that had the politicians'
+    names.
     */
-    politicians_in_article = [];
+    var politicians_in_article = [];
     var politicians_seen = new Set();
+    var analyzed_sentences = [];
+    var sentences_seen = new Set();
 
     // Iterate over all recognized politicians
     for (i = 0; i < SCORES.length; i++){
@@ -1979,6 +1991,7 @@ function find_politicians_in_article(article_array){
         if (alt_last){
             combos.push([first, alt_last]);
         };
+
         if (alt_first){
             combos.push([alt_first, last]);
             if (alt_last){
@@ -1994,8 +2007,14 @@ function find_politicians_in_article(article_array){
                 var f = combos[k][0];
                 var l = combos[k][1];
                 if (is_name_in_string(text, f + " " + l)){
+                    // Keep track of sentences that mention politicians' names
+                    if (! (sentences_seen.has(text))){
+                      analyzed_sentences.push(text);
+                      sentences_seen.add(text);
+                    };
+
                     // Don't include same politician twice
-                    if (!(politicians_seen.has(combos))){
+                    if (! (politicians_seen.has(combos))){
                         politicians_seen.add(combos);
                         var row = get_row_with_name(f, l);
                         var pol = new Politician(row);
@@ -2005,14 +2024,15 @@ function find_politicians_in_article(article_array){
             };
         };
     };
-    return politicians_in_article;
+    return [politicians_in_article, analyzed_sentences];
 };
 
 
 function is_name_in_string(paragraph_string, name){
     if (name == ""){
         return false;
-    } else {
+    } 
+    else {
         var pattern = new RegExp(name);
         var is_in_string = pattern.test(paragraph_string);
         return is_in_string;
@@ -2028,9 +2048,9 @@ function get_sentences(article_array){
             // No ., !, or ? in paragraph
             sentences_array = [article_array[i]];
         };
+
         for (j = 0; j < sentences_array.length; j++){
             rv.push(sentences_array[j]);
-        // }
         };
     };
     return rv;
@@ -2203,6 +2223,7 @@ function readability(score){
     return text;
 };
 
+
 function Flesh_Kincaid(sentences){
     /*
     Given an array of sentences, calculates the Flesh_Kincaid readability
@@ -2237,23 +2258,30 @@ function Flesh_Kincaid(sentences){
 };
 
 
-module.exports = GetBias = function (full_text){
+module.exports = GetBias = function(full_text){
     /*
     Put it all together: test for political bias and get Flesch-Kincaid score
     */
-    var article_array = get_article(full_text);
-    var full_page_array = full_text.split("\\n");
-    var full_page_sentences = get_sentences(full_page_array);
+    var page_array = get_article(full_text);
+    var article_array = page_array[0];
+    var full_page_array = page_array[1];
 
+    var full_page_sentences = get_sentences(full_page_array);
     var sentences = get_sentences(article_array);
-    var pols_in_article = find_politicians_in_article(article_array);
-    var feelings = get_sentiments(sentences, pols_in_article);
+
+    var data_in_article = find_politicians_in_article(article_array);
+    var pols_in_article = data_in_article[0];
+    var critical_sentences = data_in_article[1];
+    var feelings = get_sentiments(critical_sentences, pols_in_article);
+    
     var bias_object = calc_bias_score(feelings);
     // [bias_score, observations, display_sentences]
     var fk_object = Flesh_Kincaid(full_page_sentences);
+    
     // [fk_score, text]
     return [bias_object, fk_object];
 };
+
 
 },{"sentiment":8,"syllable":10}],13:[function(require,module,exports){
 // shim for using process in browser
