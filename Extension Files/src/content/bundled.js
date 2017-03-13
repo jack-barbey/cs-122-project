@@ -1892,7 +1892,7 @@ var SCORES = [
 ['Senate', 'SD', 'R', 'Mike', 'Rounds', '0.627', '', ''],
 ]
 
-// Functions Necessary to run/operate the extension found below
+// Modules necessary to run/operate the extension found below
 
 var sentiment = require('sentiment');
 var syllable = require('syllable');
@@ -1919,22 +1919,28 @@ function get_article(full_text){
     Takes text from webpage found using .all_text() method.
     Newlines must be replaced with literal "\n" first.
 
-    Returns an array of paragraphs representing the text
-    in the actual article, without advertisements or links,
-    and an array of paragraphs that represent the full text.
+    Returns:
+        An array of paragraphs in the text of the actual article,
+            without advertisements or links.
+        A second array of paragraphs for Flesch-Kincaid testing.
+            If the page contains an article, both values will be the same.
+            If the page doesn't contain an article, the first value will
+                be empty (no article to analyze for bias), but the second
+                value will include whatever text we can get for FK testing.
+
     */
-    var paragraph_array = full_text.split("\\n");
+    var full_text_array = full_text.split("\\n");
 
     // Remove empty lines
-    paragraph_array = paragraph_array.filter(Boolean);
+    full_text_array = full_text_array.filter(Boolean);
 
     var min_paragraph_length = 125;
     var max_consec_short_lines = 3;
     var first_full_line = -1;
     var last_line = -1;
 
-    for (i = 0; i < paragraph_array.length; i++){
-        if (paragraph_array[i].length > min_paragraph_length){
+    for (i = 0; i < full_text_array.length; i++){
+        if (full_text_array[i].length > min_paragraph_length){
             if (first_full_line == -1){
                 first_full_line = i;
                 var consec_short_lines = 0; // start counter of non-article lines at 0
@@ -1951,14 +1957,16 @@ function get_article(full_text){
     };
 
     if (first_full_line == -1){
-        return [];
+        // No article (i.e. no first sentence found)
+        // Full text still returned for Flesch-Kincaid testing
+        return [[], full_text_array];
     }
     else if (last_line == -1){
-        last_line = paragraph_array.length - 1;
+        last_line = full_text_array.length - 1;
     };
 
-    var article_array = paragraph_array.slice(first_full_line, last_line + 1);
-    return [article_array, paragraph_array];
+    var article_array = full_text_array.slice(first_full_line, last_line + 1);
+    return [article_array, article_array];
 };
 
 
@@ -1988,7 +1996,6 @@ function find_politicians_in_article(article_array){
     */
     var politicians_in_article = [];
     var politicians_seen = new Set();
-    var analyzed_sentences = [];
     var sentences_seen = new Set();
 
     // Iterate over all recognized politicians
@@ -2021,7 +2028,6 @@ function find_politicians_in_article(article_array){
                 if (is_name_in_string(text, f + " " + l)){
                     // Keep track of sentences that mention politicians' names
                     if (! (sentences_seen.has(text))){
-                      analyzed_sentences.push(text);
                       sentences_seen.add(text);
                     };
 
@@ -2036,7 +2042,7 @@ function find_politicians_in_article(article_array){
             };
         };
     };
-    return [politicians_in_article, analyzed_sentences];
+    return politicians_in_article;
 };
 
 
@@ -2107,7 +2113,6 @@ function get_sentiments(sentences, politicians){
             };
         };
     };
-
     return rv;
 };
 
@@ -2285,21 +2290,33 @@ module.exports = GetBias = function(full_text){
     */
     var page_array = get_article(full_text);
     var article_array = page_array[0];
-    var full_page_array = page_array[1];
+    var fk_text_array = page_array[1];
 
-    var full_page_sentences = get_sentences(full_page_array);
-    var sentences = get_sentences(article_array);
+    if (article_array.length > 0){
+        // Article exists. Perform bias and Flesch-Kincaid tests.
+        var article_exists = true;
+        var sentences = get_sentences(article_array);
+        var fk_sentences = sentences;
+    }
+    else {
+        // No article found. Perform only Flesch-Kincaid test.
+        var article_exists = false;
+        var fk_sentences = get_sentences(fk_text_array);
+    }
 
-    var data_in_article = find_politicians_in_article(sentences);
-    var pols_in_article = data_in_article[0];
-    var critical_sentences = data_in_article[1];
-    var feelings = get_sentiments(critical_sentences, pols_in_article);
-
-    var bias_object = calc_bias_score(feelings);
-    // [bias_score, observations, display_sentences]
-    var fk_object = Flesh_Kincaid(full_page_sentences);
-
+    if (article_exists){
+        var pols_in_article = find_politicians_in_article(sentences);
+        var feelings = get_sentiments(sentences, pols_in_article);
+        var bias_object = calc_bias_score(feelings);
+        // [bias_score, observations, display_sentences]
+    }
+    else {
+        var bias_object = [0, 0, get_sentiments([], [])];
+    }
+    
+    var fk_object = Flesh_Kincaid(fk_sentences);
     // [fk_score, text]
+
     return [bias_object, fk_object];
 };
 
