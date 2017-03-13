@@ -18,8 +18,8 @@ Caveat: Occasionally, Chrome force disables our extension because it does not co
 
 ## Notes on files contained in our project: ##
 
-1) The .crx file is the fully operational extension bundled together. It is bundled from the files located in the ?Extension Files? folder.  As an alternative to loading the .crx file, you can enable Developer Mode on the chrome://extensions page and load this folder as an unpacked extension. Use will be the exact same.
+1) The .crx file is the fully operational extension bundled together. It is bundled from the files located in the "Extension Files" folder.  As an alternative to loading the .crx file, you can enable Developer Mode on the chrome://extensions page and load this folder as an unpacked extension. Use will be the exact same.
 
-2) Some miscellaneous files that we created or used in the production of the extension are included in the ?Other Items? folder.
+2) Some miscellaneous files that we created or used in the production of the extension are included in the "Other Items" folder.
 
 
